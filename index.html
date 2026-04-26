@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Caderno PT">
+<meta name="theme-color" content="#f5efe4">
+<title>Caderno · Português Europeu</title>
+<style>
+  /* ---------- Fonts ---------- */
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+JP:wght@400;500;600&display=swap');
+
+  /* ---------- Tokens ---------- */
+  :root {
+    --paper: #f5efe4;
+    --paper-deep: #ede5d3;
+    --ink: #1a1814;
+    --ink-soft: #4a443a;
+    --ink-fade: #7a7264;
+    --rule: #d4c9b0;
+    --rule-soft: #e3d9c2;
+    --azulejo: #2c5f7c;
+    --azulejo-deep: #1e4257;
+    --terracotta: #b8593a;
+    --gold: #a87c2c;
+    --highlight: #f4e4a1;
+    --warning-bg: #f7e4dc;
+    --warning-border: #b8593a;
+    --good-bg: #e0e8d8;
+    --good-border: #5a7a3a;
+
+    --serif-display: 'Fraunces', 'Noto Serif JP', serif;
+    --serif-body: 'Cormorant Garamond', 'Noto Serif JP', serif;
+    --jp: 'Noto Serif JP', serif;
+    --mono: 'JetBrains Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: var(--serif-body);
+    font-size: 19px;
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--paper);
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(168, 124, 44, 0.04) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(44, 95, 124, 0.04) 0%, transparent 40%);
+    min-height: 100vh;
+    padding-bottom: 80px;
+    /* paper texture */
+    background-attachment: fixed;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0.05 0'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>");
+  }
+
+  /* ---------- Layout ---------- */
+  .shell {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- Masthead ---------- */
+  header.masthead {
+    padding: 56px 0 28px;
+    text-align: center;
+    border-bottom: 1px double var(--rule);
+    margin-bottom: 32px;
+  }
+  .masthead .eyebrow {
+    font-family: var(--serif-display);
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    margin-bottom: 14px;
+  }
+  .masthead h1 {
+    font-family: var(--serif-display);
+    font-weight: 500;
+    font-size: clamp(32px, 8vw, 44px);
+    letter-spacing: -0.01em;
+    line-height: 1.05;
+    font-variation-settings: "opsz" 144, "SOFT" 30;
+  }
+  .masthead h1 em {
+    font-style: italic;
+    color: var(--azulejo);
+    font-weight: 400;
+  }
+  .masthead .sub {
+    font-family: var(--jp);
+    font-size: 13px;
+    color: var(--ink-fade);
+    margin-top: 14px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ---------- Search ---------- */
+  .search-wrap {
+    margin-bottom: 28px;
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    padding: 12px 0;
+    z-index: 10;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .search-input {
+    width: 100%;
+    padding: 12px 16px 12px 42px;
+    font-family: var(--serif-body);
+    font-size: 17px;
+    background: var(--paper-deep);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-input:focus {
+    border-color: var(--azulejo);
+  }
+  .search-input::placeholder {
+    color: var(--ink-fade);
+    font-style: italic;
+  }
+  .search-wrap::before {
+    content: '⌕';
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-fade);
+    font-size: 18px;
+    pointer-events: none;
+  }
+
+  /* ---------- Tag Index (home) ---------- */
+  .tag-index {
+    margin-bottom: 48px;
+  }
+  .index-title {
+    font-family: var(--serif-display);
+    font-size: 13px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .tag-list {
+    list-style: none;
+    counter-reset: tag-counter;
+  }
+  .tag-list li {
+    counter-increment: tag-counter;
+    border-bottom: 1px dotted var(--rule);
+    padding: 18px 0;
+    cursor: pointer;
+    transition: padding-left 0.25s ease, background 0.2s;
+    position: relative;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+  .tag-list li:hover {
+    padding-left: 8px;
+    background: linear-gradient(to right, rgba(168, 124, 44, 0.06), transparent 60%);
+  }
+  .tag-list li::before {
+    content: counter(tag-counter, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-fade);
+    flex-shrink: 0;
+    width: 28px;
+    padding-top: 4px;
+  }
+  .tag-list .tag-content {
+    flex: 1;
+  }
+  .tag-list .tag-name {
+    font-family: var(--serif-display);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 4px;
+    font-variation-settings: "opsz" 60;
+  }
+  .tag-list .tag-pattern {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--azulejo);
+    margin-bottom: 6px;
+    word-break: break-word;
+  }
+  .tag-list .tag-theme {
+    font-family: var(--jp);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .tag-list .tag-arrow {
+    color: var(--ink-fade);
+    font-family: var(--serif-body);
+    font-size: 24px;
+    align-self: center;
+    transition: transform 0.25s;
+  }
+  .tag-list li:hover .tag-arrow {
+    transform: translateX(4px);
+    color: var(--azulejo);
+  }
+  .tag-list .has-note-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ---------- Note view ---------- */
+  .note-view { display: none; }
+  .note-view.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .back-link {
+    font-family: var(--serif-display);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 0;
+    margin-bottom: 24px;
+    font-style: italic;
+  }
+  .back-link:hover { color: var(--azulejo); }
+
+  .note-view h1 {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-fade);
+    font-weight: 400;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .note-view h2 {
+    font-family: var(--serif-display);
+    font-size: clamp(26px, 6vw, 34px);
+    font-weight: 500;
+    line-height: 1.15;
+    margin: 8px 0 24px;
+    font-variation-settings: "opsz" 100;
+    color: var(--ink);
+  }
+  .note-view h2 em {
+    font-style: italic;
+    color: var(--azulejo);
+    font-weight: 400;
+  }
+
+  .note-view h3 {
+    font-family: var(--serif-display);
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--terracotta);
+    margin: 40px 0 16px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--rule);
+    font-weight: 600;
+  }
+
+  .note-view h4 {
+    font-family: var(--serif-display);
+    font-size: 18px;
+    font-weight: 600;
+    margin: 28px 0 12px;
+    color: var(--ink);
+    font-variation-settings: "opsz" 50;
+  }
+  .note-view h4 .num {
+    color: var(--gold);
+    font-family: var(--mono);
+    font-size: 13px;
+    margin-right: 8px;
+    font-weight: 400;
+  }
+
+  .note-view p {
+    font-family: var(--jp);
+    font-size: 15px;
+    line-height: 1.85;
+    margin-bottom: 14px;
+    color: var(--ink-soft);
+  }
+  .note-view p.lead {
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 19px;
+    color: var(--azulejo-deep);
+    padding: 16px 0 16px 20px;
+    border-left: 3px solid var(--azulejo);
+    background: linear-gradient(to right, rgba(44, 95, 124, 0.04), transparent);
+    margin: 16px 0 24px;
+  }
+
+  /* portuguese sentence */
+  .pt {
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .pt strong {
+    background: linear-gradient(to bottom, transparent 60%, var(--highlight) 60%);
+    font-weight: 600;
+    font-style: italic;
+  }
+
+  /* example block */
+  .example {
+    margin: 12px 0 16px;
+    padding: 14px 18px;
+    border-left: 2px solid var(--rule);
+    background: rgba(237, 229, 211, 0.4);
+  }
+  .example .pt-line { font-family: var(--serif-body); font-style: italic; font-size: 18px; line-height: 1.4; }
+  .example .pt-line strong {
+    background: linear-gradient(to bottom, transparent 60%, var(--highlight) 60%);
+    font-weight: 600;
+  }
+  .example .jp-line {
+    font-family: var(--jp); font-size: 13px; color: var(--ink-soft);
+    margin-top: 4px;
+  }
+  .example .source {
+    font-family: var(--serif-display); font-style: italic; font-size: 11px;
+    color: var(--ink-fade); margin-top: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  /* tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0 24px;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--rule-soft);
+    vertical-align: top;
+  }
+  th {
+    font-family: var(--serif-display);
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    border-bottom: 1.5px solid var(--rule);
+  }
+  td.pt-cell {
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 16px;
+    color: var(--ink);
+  }
+  td.jp-cell {
+    font-family: var(--jp);
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  td .hl {
+    background: linear-gradient(to bottom, transparent 60%, var(--highlight) 60%);
+    font-weight: 600;
+  }
+  table.conj {
+    max-width: 360px;
+  }
+  table.conj td:first-child {
+    font-family: var(--jp);
+    color: var(--ink-fade);
+    font-size: 13px;
+    width: 35%;
+  }
+  table.conj td:last-child {
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 17px;
+    font-weight: 500;
+  }
+  table.conj td:last-child strong {
+    background: linear-gradient(to bottom, transparent 60%, var(--highlight) 60%);
+  }
+
+  /* callouts */
+  .callout {
+    margin: 18px 0;
+    padding: 14px 18px;
+    border-radius: 2px;
+    font-family: var(--jp);
+    font-size: 14px;
+    line-height: 1.7;
+    position: relative;
+  }
+  .callout.warning {
+    background: var(--warning-bg);
+    border-left: 3px solid var(--warning-border);
+    color: #5a2a1a;
+  }
+  .callout.tip {
+    background: var(--good-bg);
+    border-left: 3px solid var(--good-border);
+    color: #2a3a1a;
+  }
+  .callout::before {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+    opacity: 0.7;
+  }
+  .callout.warning::before { content: '⚠ Atenção'; color: var(--warning-border); }
+  .callout.tip::before { content: '✦ Dica'; color: var(--good-border); }
+
+  .callout .pt-inline { font-family: var(--serif-body); font-style: italic; font-size: 15px; color: var(--ink); }
+  .callout .x { color: #a83a2a; font-weight: 600; }
+  .callout .ok { color: #4a7a3a; font-weight: 600; }
+
+  /* Mistake list */
+  .mistake-row {
+    padding: 12px 0;
+    border-bottom: 1px dotted var(--rule);
+    font-size: 14px;
+  }
+  .mistake-row:last-child { border: none; }
+  .mistake-row .wrong, .mistake-row .right {
+    font-family: var(--serif-body); font-style: italic; font-size: 16px;
+    display: block; margin: 3px 0;
+  }
+  .mistake-row .wrong::before { content: '× '; color: #a83a2a; font-weight: 700; font-style: normal; }
+  .mistake-row .right::before { content: '○ '; color: #4a7a3a; font-weight: 700; font-style: normal; }
+  .mistake-row .reason {
+    font-family: var(--jp); font-size: 12px; color: var(--ink-fade); margin-top: 4px;
+    padding-left: 18px;
+  }
+
+  /* related tags */
+  .related-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .related-tag {
+    font-family: var(--mono);
+    font-size: 11px;
+    background: var(--paper-deep);
+    color: var(--azulejo);
+    padding: 6px 10px;
+    border: 1px solid var(--rule);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .related-tag:hover {
+    background: var(--azulejo);
+    color: var(--paper);
+    border-color: var(--azulejo);
+  }
+  .related-tag.future {
+    color: var(--ink-fade);
+    cursor: default;
+    font-style: italic;
+  }
+  .related-tag.future:hover {
+    background: var(--paper-deep);
+    color: var(--ink-fade);
+    border-color: var(--rule);
+  }
+
+  /* Personal notes */
+  .notes-area {
+    margin-top: 16px;
+  }
+  .notes-textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 16px;
+    font-family: var(--jp);
+    font-size: 15px;
+    line-height: 1.7;
+    background: var(--paper-deep);
+    border: 1px dashed var(--rule);
+    border-radius: 2px;
+    color: var(--ink);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .notes-textarea:focus {
+    border-style: solid;
+    border-color: var(--terracotta);
+  }
+  .notes-meta {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 11px;
+    color: var(--ink-fade);
+    margin-top: 6px;
+    text-align: right;
+    letter-spacing: 0.05em;
+  }
+  .notes-meta .saved-flash {
+    color: var(--good-border);
+    transition: opacity 0.4s;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 80px;
+    padding: 32px 0;
+    border-top: 1px double var(--rule);
+    text-align: center;
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-fade);
+    letter-spacing: 0.06em;
+  }
+  footer .ornament {
+    font-size: 18px;
+    color: var(--gold);
+    margin-bottom: 14px;
+    letter-spacing: 0.4em;
+  }
+
+  /* No results */
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    font-family: var(--jp);
+    color: var(--ink-fade);
+    font-size: 14px;
+  }
+  .no-results::before {
+    content: '∅';
+    display: block;
+    font-size: 36px;
+    color: var(--rule);
+    margin-bottom: 12px;
+  }
+
+  /* Search highlight */
+  mark {
+    background: var(--highlight);
+    color: var(--ink);
+    padding: 0 2px;
+  }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    body { font-size: 17px; }
+    .shell { padding: 0 18px; }
+    header.masthead { padding: 36px 0 22px; }
+    .tag-list .tag-name { font-size: 19px; }
+    .tag-list .tag-pattern { font-size: 11px; }
+    table { font-size: 13px; }
+    th, td { padding: 8px 8px; }
+    td.pt-cell { font-size: 15px; }
+  }
+
+  /* Selection */
+  ::selection { background: var(--azulejo); color: var(--paper); }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <header class="masthead">
+    <div class="eyebrow">Caderno de Gramática</div>
+    <h1>Português <em>Europeu</em></h1>
+    <div class="sub">A1 〜 A2 学習者のための文法骨格集</div>
+  </header>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <input type="text" class="search-input" id="searchInput" placeholder="タグ・パターン・例文・日本語で検索…">
+  </div>
+
+  <!-- HOME: Tag index -->
+  <main id="home" class="tag-index">
+    <h2 class="index-title">— Índice —</h2>
+    <ol class="tag-list" id="tagList"></ol>
+    <div class="no-results" id="noResults" style="display:none;">該当するタグが見つかりません</div>
+  </main>
+
+  <!-- Note detail view -->
+  <article id="noteView" class="note-view"></article>
+
+  <footer>
+    <div class="ornament">❦ · ❦ · ❦</div>
+    Caderno · A1→A2 · 携帯端末でホーム画面に追加して使用可<br>
+    メモはこの端末のブラウザに自動保存されます
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA — All grammar notes embedded
+   ============================================================ */
+const NOTES = [
+  {
+    id: 'ir_a_lugar_com_objeto',
+    name: 'ir a + lugar + com + objeto',
+    pattern: 'ir a + [lugar] + com + [objeto]',
+    theme: '移動動詞・縮約 ao/à',
+    source: 'O menino e o pato',
+    sections: [
+      { type: 'lead', text: '「[誰々]が[何々]を持って[どこそこ]へ行く」' },
+      { type: 'h3', text: '例文' },
+      { type: 'example', pt: 'Um menino vai <strong>ao</strong> parque <strong>com</strong> um pão.', jp: '男の子がパンを持って公園へ行く。', source: 'Shorty「O menino e o pato」' },
+      { type: 'example', pt: 'Vou <strong>à</strong> farmácia <strong>com</strong> a receita.', jp: '処方箋を持って薬局に行く。' },
+      { type: 'example', pt: 'Nós vamos <strong>à</strong> praia <strong>com</strong> uma toalha.', jp: '私たちはタオルを持ってビーチへ行く。' },
+
+      { type: 'h3', text: 'ポイント解説' },
+      { type: 'h4', num: '1', text: 'ir a vs ir para' },
+      { type: 'p', text: '<b>ir a</b> … 短期的な訪問・往復を前提（その場所に行ってまた戻る）<br><span class="pt">Vou ao supermercado.</span>（スーパーに行く＝買い物してすぐ戻る）' },
+      { type: 'p', text: '<b>ir para</b> … より長期的・恒久的な移動<br><span class="pt">Vou para casa.</span>（家に帰る＝そこに留まる）<br><span class="pt">Vou para o Brasil no próximo ano.</span>（来年ブラジルに引っ越す）' },
+      { type: 'tip', text: 'A1-A2では「日常的な外出」はほぼすべて <span class="pt-inline">ir a</span> で表現できると覚えてOK。' },
+
+      { type: 'h4', num: '2', text: '縮約 (contração) の必須対応表' },
+      { type: 'table', headers: ['前置詞 + 冠詞', '縮約形', '例'], rows: [
+        ['a + o', '<span class="hl">ao</span>', 'ir <span class="hl">ao</span> parque'],
+        ['a + a', '<span class="hl">à</span>', 'ir <span class="hl">à</span> escola'],
+        ['a + os', '<span class="hl">aos</span>', 'ir <span class="hl">aos</span> correios'],
+        ['a + as', '<span class="hl">às</span>', 'ir <span class="hl">às</span> compras'],
+      ]},
+      { type: 'warning', text: '<b>a + a = à</b> のアクセント記号（クラーゼ acento grave）を忘れない こと。書き言葉でも話し言葉でも区別が必要。' },
+
+      { type: 'h4', num: '3', text: 'com の使い方' },
+      { type: 'p', text: '<span class="pt">com + [objeto]</span> で「〜を持って／〜と一緒に」。冠詞は基本的に必要（<span class="pt">com um pão</span>, <span class="pt">com a mochila</span>）。<br><span class="pt">com</span> は他の前置詞のような縮約はしない（<span class="pt">com o</span>, <span class="pt">com a</span> のまま）。' },
+
+      { type: 'h3', text: '動詞 ir の現在形活用' },
+      { type: 'conj', rows: [['eu', '<strong>vou</strong>'], ['tu', '<strong>vais</strong>'], ['ele/ela/você', '<strong>vai</strong>'], ['nós', '<strong>vamos</strong>'], ['eles/elas/vocês', '<strong>vão</strong>']]},
+
+      { type: 'h3', text: 'よくある間違い' },
+      { type: 'mistake', wrong: 'Vou a o parque.', right: 'Vou ao parque.', reason: '縮約必須' },
+      { type: 'mistake', wrong: 'Vou na escola.', right: 'Vou à escola.', reason: 'em ではなく a。na はブラジル風' },
+      { type: 'mistake', wrong: 'Vou para o supermercado comprar pão.', right: 'Vou ao supermercado comprar pão.', reason: '買い物ですぐ戻るので a' },
+
+      { type: 'h3', text: '関連タグ' },
+      { type: 'related', tags: [{id: 'ir_ate_a_lugar', label: 'ir_ate_a_lugar'}, {future: true, label: '今後追加予定'}]},
+    ],
+  },
+
+  {
+    id: 'dar_od_a_oi',
+    name: 'dar + OD + a + OI',
+    pattern: 'dar + [OD] + a + [OI]',
+    theme: '間接目的語・語順',
+    source: 'O menino e o pato',
+    sections: [
+      { type: 'lead', text: '「[誰々]が[誰々]に[何々]をあげる／渡す」' },
+      { type: 'h3', text: '例文' },
+      { type: 'example', pt: 'O menino dá um pedaço de pão <strong>ao</strong> pato.', jp: '男の子はアヒルにパンを一切れあげる。', source: 'Shorty「O menino e o pato」' },
+      { type: 'example', pt: 'Eu dou um livro <strong>ao</strong> meu irmão.', jp: '私は弟に本をあげる。' },
+      { type: 'example', pt: 'Os pais dão dinheiro <strong>aos</strong> filhos.', jp: '両親は子供たちにお金をあげる。' },
+
+      { type: 'h3', text: 'ポイント解説' },
+      { type: 'h4', num: '1', text: '語順は「日本語と逆」' },
+      { type: 'p', text: '日本語：「[人]に [物]を あげる」<br>ポルトガル語：「dar [物] <b>a</b> [人]」' },
+      { type: 'table', headers: ['日本語', 'ポルトガル語'], rows: [
+        ['弟に本をあげる', 'dar um livro <span class="hl">ao</span> irmão'],
+        ['母に花をあげる', 'dar uma flor <span class="hl">à</span> mãe'],
+      ]},
+      { type: 'warning', text: '物（直接目的語）が先、人（間接目的語）が後。日本人学習者は逆にしがちなので要注意。' },
+
+      { type: 'h4', num: '2', text: '縮約は必須' },
+      { type: 'p', text: '人を表す名詞には冠詞が付くことが多く、縮約が頻発する。' },
+      { type: 'table', headers: ['構造', '例'], rows: [
+        ['a + o → <span class="hl">ao</span>', 'dar um presente <span class="hl">ao</span> João'],
+        ['a + a → <span class="hl">à</span>', 'dar um beijo <span class="hl">à</span> Maria'],
+        ['a + os → <span class="hl">aos</span>', 'dar comida <span class="hl">aos</span> cães'],
+        ['a + as → <span class="hl">às</span>', 'dar flores <span class="hl">às</span> amigas'],
+      ]},
+
+      { type: 'h4', num: '3', text: 'dar を使った重要慣用表現' },
+      { type: 'table', headers: ['表現', '意味'], rows: [
+        ['<span class="hl">dar um beijo</span>', 'キスをする'],
+        ['<span class="hl">dar um abraço</span>', 'ハグをする'],
+        ['<span class="hl">dar uma boleia</span>', '車に乗せてあげる（🇵🇹特有 / 🇧🇷 carona）'],
+        ['<span class="hl">dar uma volta</span>', '散歩する／ドライブする'],
+        ['<span class="hl">dar os parabéns</span>', 'おめでとうと言う'],
+      ]},
+
+      { type: 'h3', text: '動詞 dar の現在形活用' },
+      { type: 'conj', rows: [['eu', '<strong>dou</strong>'], ['tu', '<strong>dás</strong>'], ['ele/ela', '<strong>dá</strong>'], ['nós', '<strong>damos</strong>'], ['eles/elas', '<strong>dão</strong>']]},
+
+      { type: 'h3', text: '次のステップ：与格代名詞への置き換え' },
+      { type: 'p', text: 'A2後半で重要になる発展形。間接目的語を代名詞にすると：' },
+      { type: 'table', headers: ['人称', '例'], rows: [
+        ['me（私に）', 'Ele dá-<span class="hl">me</span> um livro.'],
+        ['te（君に）', 'Ela dá-<span class="hl">te</span> um beijo.'],
+        ['lhe（彼/彼女に）', 'Eu dou-<span class="hl">lhe</span> o pão.'],
+        ['nos（私たちに）', 'Eles dão-<span class="hl">nos</span> as chaves.'],
+        ['vos（君たちに）', 'Eu dou-<span class="hl">vos</span> os livros.'],
+        ['lhes（彼ら/彼女らに）', 'Nós damos-<span class="hl">lhes</span> comida.'],
+      ]},
+      { type: 'warning', text: 'ヨーロッパポルトガル語では肯定文では <b>enclisis（後置）</b> がデフォルト：<span class="pt-inline">dá-me</span>, <span class="pt-inline">dou-lhe</span>。' },
+
+      { type: 'h3', text: 'よくある間違い' },
+      { type: 'mistake', wrong: 'Eu dou ao pato pão.', right: 'Eu dou pão ao pato.', reason: '物が先' },
+      { type: 'mistake', wrong: 'Dou para o meu irmão um livro.', right: 'Dou um livro ao meu irmão.', reason: '前置詞は a、para ではない' },
+
+      { type: 'h3', text: '関連タグ' },
+      { type: 'related', tags: [{id: 'ir_a_lugar_com_objeto', label: 'ir_a_lugar_com_objeto'}, {future: true, label: 'pronomes_indiretos（予定）'}]},
+    ],
+  },
+
+  {
+    id: 'querer_substantivo',
+    name: 'querer + substantivo',
+    pattern: 'querer + [substantivo]',
+    theme: '不規則動詞・冠詞・丁寧度',
+    source: 'O menino e o pato',
+    sections: [
+      { type: 'lead', text: '「[誰々]が[何々]を欲しがる／欲しい」' },
+      { type: 'h3', text: '例文' },
+      { type: 'example', pt: 'O pato <strong>quer</strong> o pão.', jp: 'アヒルはパンを欲しがる。', source: 'Shorty「O menino e o pato」' },
+      { type: 'example', pt: 'Eu <strong>quero</strong> um café.', jp: 'コーヒーが欲しい。' },
+      { type: 'example', pt: 'Nós <strong>queremos</strong> a conta, por favor.', jp: 'お会計をお願いします。' },
+
+      { type: 'h3', text: 'ポイント解説' },
+      { type: 'h4', num: '1', text: 'querer は「不規則動詞」' },
+      { type: 'p', text: '形が予測しにくいので、まず活用を完璧に覚えること。' },
+      { type: 'conj', rows: [['eu', '<strong>quero</strong>'], ['tu', '<strong>queres</strong>'], ['ele/ela/você', '<strong>quer</strong>'], ['nós', '<strong>queremos</strong>'], ['eles/elas/vocês', '<strong>querem</strong>']]},
+      { type: 'warning', text: '<span class="pt-inline">eu quero</span>（×querio）、<span class="pt-inline">ele quer</span>（×quere）が落とし穴。' },
+
+      { type: 'h4', num: '2', text: '冠詞の使い分け：定冠詞 vs 不定冠詞' },
+      { type: 'table', headers: ['冠詞', 'ニュアンス', '例'], rows: [
+        ['定冠詞 (o, a)', '特定の／話題に出ている', '<span class="pt-cell">Quero <span class="hl">o</span> livro.</span>'],
+        ['不定冠詞 (um, uma)', '不特定の／一つの', '<span class="pt-cell">Quero <span class="hl">um</span> livro.</span>'],
+        ['冠詞なし', '物質名詞・抽象的', '<span class="pt-cell">Quero água.</span>'],
+      ]},
+      { type: 'tip', text: 'カフェで注文するときは <span class="pt-inline">Quero <b>um</b> café, por favor.</span>（不定冠詞）が自然。' },
+
+      { type: 'h4', num: '3', text: '丁寧度のグラデーション' },
+      { type: 'table', headers: ['表現', '丁寧度', '場面'], rows: [
+        ['<span class="hl">Quero</span> um café.', '普通', '友達同士、カジュアル'],
+        ['<span class="hl">Queria</span> um café.', 'より丁寧', 'レストラン、初対面'],
+        ['<span class="hl">Gostaria de</span> um café.', 'とても丁寧', 'フォーマルな場'],
+      ]},
+      { type: 'warning', text: 'ヨーロッパポルトガル語では <b>Queria...</b> がレストランや店で最も自然な注文表現。覚えておくと便利。' },
+
+      { type: 'h3', text: '発展：querer + infinitivo（〜したい）' },
+      { type: 'p', text: '名詞の代わりに動詞の不定形を続けると「〜したい」の意味になる。これがさらに頻出。' },
+      { type: 'example', pt: 'Quero <strong>comer</strong>.', jp: '食べたい' },
+      { type: 'example', pt: 'Tu queres <strong>ir</strong> ao cinema?', jp: '映画に行きたい？' },
+      { type: 'example', pt: 'Ela quer <strong>aprender</strong> português.', jp: '彼女はポルトガル語を学びたがっている' },
+
+      { type: 'h3', text: 'よくある間違い' },
+      { type: 'mistake', wrong: 'Eu quero de um café.', right: 'Eu quero um café.', reason: 'querer の後に de は不要' },
+      { type: 'mistake', wrong: 'Eu querio.', right: 'Eu quero.', reason: '不規則活用' },
+
+      { type: 'h3', text: '関連タグ' },
+      { type: 'related', tags: [{future: true, label: 'querer_infinitivo（予定）'}, {future: true, label: 'queria_pedido（予定）'}]},
+    ],
+  },
+
+  {
+    id: 'atras_de_contracao',
+    name: 'atrás de + contração',
+    pattern: '[verbo] + atrás de + [contração]',
+    theme: '複合前置詞・縮約 do/da',
+    source: 'O menino e o pato',
+    sections: [
+      { type: 'lead', text: '「[誰々]が[誰々／何々]の後ろを追う／〜の後ろにいる」' },
+      { type: 'h3', text: '例文' },
+      { type: 'example', pt: 'O pato corre <strong>atrás do</strong> menino.', jp: 'アヒルが男の子を追いかける。', source: 'Shorty「O menino e o pato」' },
+      { type: 'example', pt: 'O cão corre <strong>atrás do</strong> gato.', jp: '犬が猫を追いかける。' },
+      { type: 'example', pt: 'Eu corro <strong>atrás do</strong> autocarro.', jp: 'バスを追いかけて走る。' },
+
+      { type: 'h3', text: 'ポイント解説' },
+      { type: 'h4', num: '1', text: 'atrás de は「複合前置詞」' },
+      { type: 'p', text: 'ポルトガル語には <span class="pt">de</span> を伴う複合前置詞が多数あり、A2の重要項目。位置・方向を表す代表例：' },
+      { type: 'table', headers: ['表現', '意味'], rows: [
+        ['<span class="hl">atrás de</span>', '〜の後ろに／後ろを'],
+        ['<span class="hl">em frente de</span>', '〜の前に'],
+        ['<span class="hl">ao lado de</span>', '〜の隣に'],
+        ['<span class="hl">perto de</span>', '〜の近くに'],
+        ['<span class="hl">longe de</span>', '〜から遠くに'],
+        ['<span class="hl">dentro de</span>', '〜の中に'],
+        ['<span class="hl">fora de</span>', '〜の外に'],
+        ['<span class="hl">em cima de</span>', '〜の上に'],
+        ['<span class="hl">debaixo de</span>', '〜の下に'],
+        ['<span class="hl">antes de</span>', '〜の前に（時間）'],
+        ['<span class="hl">depois de</span>', '〜の後に（時間）'],
+      ]},
+      { type: 'warning', text: 'すべて末尾の <span class="pt-inline">de</span> が <b>次の名詞の冠詞と縮約</b> する。' },
+
+      { type: 'h4', num: '2', text: '縮約パターン（必須暗記）' },
+      { type: 'table', headers: ['de + 冠詞', '縮約形', '例'], rows: [
+        ['de + o', '<span class="hl">do</span>', 'atrás <span class="hl">do</span> menino'],
+        ['de + a', '<span class="hl">da</span>', 'atrás <span class="hl">da</span> árvore'],
+        ['de + os', '<span class="hl">dos</span>', 'atrás <span class="hl">dos</span> carros'],
+        ['de + as', '<span class="hl">das</span>', 'atrás <span class="hl">das</span> casas'],
+        ['de + um (口語)', '<span class="hl">dum</span>', 'atrás <span class="hl">dum</span> muro'],
+        ['de + uma (口語)', '<span class="hl">duma</span>', 'atrás <span class="hl">duma</span> porta'],
+      ]},
+
+      { type: 'h4', num: '3', text: '「追いかける」の表現' },
+      { type: 'p', text: '日本語の「追いかける」を直訳しがちだが、ポルトガル語では動きの動詞 + <span class="pt">atrás de</span> の組み合わせが自然。' },
+      { type: 'table', headers: ['構造', '意味'], rows: [
+        ['<span class="hl">correr atrás de</span>', '走って追いかける'],
+        ['<span class="hl">andar atrás de</span>', '歩いて追う／執着する'],
+        ['<span class="hl">ir atrás de</span>', '〜の後を追っていく'],
+      ]},
+      { type: 'tip', text: '<span class="pt-inline">andar atrás de alguém</span> には比喩的に「（恋愛で）誰かを追いかける」という意味もある。' },
+
+      { type: 'h4', num: '4', text: '人称代名詞との組み合わせ' },
+      { type: 'p', text: '人称代名詞が後に来るときは <span class="pt">de</span> の後に <b>強勢形</b> を使う。' },
+      { type: 'conj', rows: [
+        ['eu', 'atrás de <strong>mim</strong>'],
+        ['tu', 'atrás de <strong>ti</strong>'],
+        ['ele/ela', 'atrás <strong>dele/dela</strong>'],
+        ['nós', 'atrás de <strong>nós</strong>'],
+        ['eles/elas', 'atrás <strong>deles/delas</strong>'],
+      ]},
+      { type: 'warning', text: '<span class="pt-inline">atrás de eu</span>（×）／<span class="pt-inline">atrás de tu</span>（×）は誤り。<span class="pt-inline">mim</span>, <span class="pt-inline">ti</span> を使う。' },
+
+      { type: 'h3', text: 'よくある間違い' },
+      { type: 'mistake', wrong: 'O pato corre atrás de o menino.', right: 'O pato corre atrás do menino.', reason: '縮約必須' },
+      { type: 'mistake', wrong: 'Eu corro atrás de tu.', right: 'Eu corro atrás de ti.', reason: '強勢形' },
+      { type: 'mistake', wrong: 'atrás casa', right: 'atrás da casa', reason: '前置詞欠落' },
+
+      { type: 'h3', text: '関連タグ' },
+      { type: 'related', tags: [{id: 'ir_a_lugar_com_objeto', label: 'ir_a_lugar_com_objeto'}, {future: true, label: 'pronomes_tonicos（予定）'}]},
+    ],
+  },
+
+  {
+    id: 'ter_substantivo',
+    name: 'ter + substantivo',
+    pattern: 'ter + [artigo] + [substantivo]',
+    theme: '多義動詞・身体感覚',
+    source: 'O menino e o pato',
+    sections: [
+      { type: 'lead', text: '「[誰々]が[何々]を持っている／[何々]がある／[何々]を感じる」' },
+      { type: 'h3', text: '例文' },
+      { type: 'example', pt: 'O menino <strong>tem</strong> uma ideia.', jp: '男の子はあるアイデアを思いつく。', source: 'Shorty「O menino e o pato」' },
+      { type: 'example', pt: 'Eu <strong>tenho</strong> uma pergunta.', jp: '質問があります。' },
+      { type: 'example', pt: 'Ele <strong>tem</strong> fome.', jp: '彼はお腹がすいている。' },
+
+      { type: 'h3', text: 'ポイント解説' },
+      { type: 'h4', num: '1', text: 'ter は最重要動詞' },
+      { type: 'p', text: 'ポルトガル語で最も使われる動詞の一つ。所有・存在・感覚・年齢・義務など、極めて広い意味をカバーする。' },
+
+      { type: 'h4', num: '2', text: 'ter の現在形活用（要暗記）' },
+      { type: 'conj', rows: [['eu', '<strong>tenho</strong>'], ['tu', '<strong>tens</strong>'], ['ele/ela/você', '<strong>tem</strong>'], ['nós', '<strong>temos</strong>'], ['eles/elas/vocês', '<strong>têm</strong>']]},
+      { type: 'warning', text: '<span class="pt-inline">ele tem</span> と <span class="pt-inline">eles têm</span> の区別は <b>アクセント ^ (chapéu)</b> だけ。書き言葉では絶対に省略しないこと。' },
+
+      { type: 'h4', num: '3', text: '用法カテゴリ別の例' },
+      { type: 'p', text: '<b>A. 所有</b><br><span class="pt">Tenho um carro.</span>（車を持っている）<br><span class="pt">Ela tem uma casa grande.</span>（彼女は大きい家を持っている）' },
+      { type: 'p', text: '<b>B. 身体感覚・感情（冠詞なしが多い！）</b>' },
+      { type: 'table', headers: ['表現', '意味'], rows: [
+        ['ter <span class="hl">fome</span>', 'お腹がすいている'],
+        ['ter <span class="hl">sede</span>', 'のどが渇いている'],
+        ['ter <span class="hl">frio</span>', '寒い'],
+        ['ter <span class="hl">calor</span>', '暑い'],
+        ['ter <span class="hl">sono</span>', '眠い'],
+        ['ter <span class="hl">medo (de)</span>', '〜が怖い'],
+        ['ter <span class="hl">vergonha</span>', '恥ずかしい'],
+        ['ter <span class="hl">razão</span>', '正しい・その通り'],
+        ['ter <span class="hl">sorte</span>', '運がいい'],
+      ]},
+      { type: 'warning', text: '日本語では「私は寒い」だが、ポルトガル語では <span class="pt-inline">Eu sou frio.</span>（×）ではなく <b>Eu tenho frio.</b> が正解。<span class="pt-inline">ser frio</span> は「冷たい人だ」（性格）になってしまう。' },
+
+      { type: 'p', text: '<b>C. 年齢</b><br><span class="pt">Tenho 30 anos.</span>（30歳です）<br><span class="pt">Que idade tens?</span>（何歳？）' },
+      { type: 'warning', text: '英語の <i>I am 30 years old.</i> に引きずられて <span class="pt-inline">Eu sou 30 anos.</span>（×）と言わないこと。' },
+
+      { type: 'p', text: '<b>D. 「〜がある」（存在）</b><br><span class="pt">O hotel tem piscina.</span>（このホテルにはプールがある）<br><span class="pt">A cidade tem muitos parques.</span>（この街には公園がたくさんある）' },
+
+      { type: 'h3', text: '発展：ter de + infinitivo' },
+      { type: 'p', text: 'A2で必ず出会う重要構文。義務を表す。' },
+      { type: 'example', pt: 'Tenho <strong>de</strong> ir ao médico.', jp: '医者に行かないと' },
+      { type: 'example', pt: 'Tens <strong>de</strong> estudar mais.', jp: 'もっと勉強しないと' },
+      { type: 'tip', text: 'ヨーロッパポルトガル語では <b>ter de</b> が標準。<span class="pt-inline">ter que</span> も使われるがやや口語的。' },
+
+      { type: 'h3', text: 'よくある間違い' },
+      { type: 'mistake', wrong: 'Eu sou 25 anos.', right: 'Eu tenho 25 anos.', reason: '年齢は ter' },
+      { type: 'mistake', wrong: 'Eu sou frio.', right: 'Eu tenho frio.', reason: '寒い・暑いは ter' },
+      { type: 'mistake', wrong: 'Eles tem.', right: 'Eles têm.', reason: '複数は ^ 付き' },
+
+      { type: 'h3', text: '関連タグ' },
+      { type: 'related', tags: [{future: true, label: 'ter_de_infinitivo（予定）'}, {future: true, label: 'haver_existencial（予定）'}]},
+    ],
+  },
+
+  {
+    id: 'ir_ate_a_lugar',
+    name: 'ir até + à/ao + lugar',
+    pattern: 'ir até + [contração] + [lugar]',
+    theme: '到達点・二段階縮約',
+    source: 'O menino e o pato',
+    sections: [
+      { type: 'lead', text: '「[誰々]が[どこそこ]まで行く」' },
+      { type: 'h3', text: '例文' },
+      { type: 'example', pt: 'Ele vai <strong>até à</strong> árvore e encontra uma maçã.', jp: '彼は木のところまで行って、リンゴを見つける。', source: 'Shorty「O menino e o pato」' },
+      { type: 'example', pt: 'Vou <strong>até ao</strong> café da esquina.', jp: '角のカフェまで行く。' },
+      { type: 'example', pt: 'Vamos <strong>até ao</strong> topo da montanha.', jp: '山の頂上まで行きます。' },
+
+      { type: 'h3', text: 'ポイント解説' },
+      { type: 'h4', num: '1', text: 'até の意味：「〜まで」' },
+      { type: 'p', text: '到達点を強調する前置詞。場所にも時間にも使える。' },
+      { type: 'table', headers: ['用法', '例'], rows: [
+        ['場所の到達点', '<span class="pt-cell">Vou <span class="hl">até à</span> praia.</span>'],
+        ['時間の到達点', '<span class="pt-cell">Trabalho <span class="hl">até às</span> seis.</span>'],
+        ['別れの挨拶', '<span class="pt-cell"><span class="hl">Até</span> amanhã!</span>'],
+      ]},
+
+      { type: 'h4', num: '2', text: 'なぜ até の後に a が来るのか？' },
+      { type: 'p', text: 'ヨーロッパポルトガル語では <b>ir até a + 場所</b> という構造が標準。<span class="pt">até</span> だけでもOKだが、<span class="pt">até a</span> の方が「その場所まで到達する」意味がより明確。' },
+      { type: 'warning', text: 'ブラジルポルトガル語では <span class="pt-inline">até a árvore</span>（縮約せず）が一般的だが、<b>ヨーロッパポルトガル語では <span class="pt-inline">até à árvore</span>（縮約あり）</b> が標準。' },
+
+      { type: 'h4', num: '3', text: '縮約は二段階で起こる' },
+      { type: 'p', text: '<span class="pt">até</span> + <span class="pt">a</span> + 冠詞 → 冠詞と <span class="pt">a</span> が縮約：' },
+      { type: 'table', headers: ['構造', '縮約形', '例'], rows: [
+        ['até + a + o', 'até <span class="hl">ao</span>', 'até ao parque'],
+        ['até + a + a', 'até <span class="hl">à</span>', 'até à escola'],
+        ['até + a + os', 'até <span class="hl">aos</span>', 'até aos correios'],
+        ['até + a + as', 'até <span class="hl">às</span>', 'até às lojas'],
+      ]},
+
+      { type: 'h4', num: '4', text: 'ir a vs ir até a のニュアンス差' },
+      { type: 'table', headers: ['表現', 'ニュアンス'], rows: [
+        ['<span class="pt-cell">Vou ao parque.</span>', '公園に行く（一般的・目的地としての意識）'],
+        ['<span class="pt-cell">Vou <span class="hl">até</span> ao parque.</span>', '公園<b>まで</b>行く（道のり意識・ちょっと出かける感）'],
+      ]},
+      { type: 'tip', text: '<span class="pt-inline">ir até</span> は「ちょっとそこまで行ってくる」という気軽な感じが出るのが特徴。日常会話で頻出。<br><span class="pt-inline">Vou até ao café comprar pão.</span>（パンを買いにちょっとカフェまで行ってくる）' },
+
+      { type: 'h4', num: '5', text: 'até を使った頻出フレーズ' },
+      { type: 'table', headers: ['表現', '意味'], rows: [
+        ['<span class="hl">Até já!</span>', 'またあとで！（すぐ会うとき）'],
+        ['<span class="hl">Até logo!</span>', 'また後で！（今日中にまた）'],
+        ['<span class="hl">Até amanhã!</span>', 'また明日！'],
+        ['<span class="hl">Até à próxima!</span>', 'また次の機会に！'],
+        ['<span class="hl">até ao fim</span>', '最後まで'],
+      ]},
+
+      { type: 'h3', text: 'よくある間違い' },
+      { type: 'mistake', wrong: 'Vou até a árvore.', right: 'Vou até à árvore.', reason: 'ヨーロッパポルトガル語では縮約必須（ブラジル風 NG）' },
+      { type: 'mistake', wrong: 'Vou até parque.', right: 'Vou até ao parque.', reason: '前置詞欠落' },
+      { type: 'mistake', wrong: 'Vou até para a praia.', right: 'Vou até à praia.', reason: 'até para は不要・不自然' },
+
+      { type: 'h3', text: '関連タグ' },
+      { type: 'related', tags: [{id: 'ir_a_lugar_com_objeto', label: 'ir_a_lugar_com_objeto'}, {future: true, label: 'ate_tempo（予定）'}]},
+    ],
+  },
+
+  {
+    id: 'ficar_adjetivo',
+    name: 'ficar + adjetivo',
+    pattern: 'ficar + [adjetivo]',
+    theme: '状態変化・性数一致',
+    source: 'O menino e o pato',
+    sections: [
+      { type: 'lead', text: '「[誰々]が[〜という状態]になる／〜のままでいる」' },
+      { type: 'h3', text: '例文' },
+      { type: 'example', pt: 'O menino <strong>fica cansado</strong>.', jp: '男の子は疲れる。', source: 'Shorty「O menino e o pato」' },
+      { type: 'example', pt: 'Eu <strong>fico contente</strong> com a notícia.', jp: 'そのニュースを聞いて嬉しくなる。' },
+      { type: 'example', pt: 'Ela <strong>fica triste</strong> quando chove.', jp: '彼女は雨が降ると悲しくなる。' },
+
+      { type: 'h3', text: 'ポイント解説' },
+      { type: 'h4', num: '1', text: 'ficar は多義動詞' },
+      { type: 'p', text: 'A2学習者が混乱しやすい動詞 No.1。文脈で意味が大きく変わる。' },
+      { type: 'table', headers: ['意味', '例'], rows: [
+        ['<b>〜になる</b>（状態変化）', '<span class="pt-cell">Ela ficou doente.</span>'],
+        ['<b>〜のままでいる</b>', '<span class="pt-cell">Fica calmo.</span>'],
+        ['<b>〜にある</b>（位置）', '<span class="pt-cell">O hotel fica perto da praia.</span>'],
+        ['<b>滞在する</b>', '<span class="pt-cell">Vou ficar três dias em Lisboa.</span>'],
+        ['<b>似合う</b>（衣服）', '<span class="pt-cell">Esse vestido fica-te bem.</span>'],
+      ]},
+
+      { type: 'h4', num: '2', text: 'ficar + 形容詞 = 状態変化' },
+      { type: 'p', text: 'このタグで扱うのは <b>「〜になる」（変化）</b> の用法。日本語の「〜くなる／〜になる」に対応。' },
+
+      { type: 'h4', num: '3', text: 'ser / estar / ficar の使い分け（最重要）' },
+      { type: 'table', headers: ['動詞', '性質', '例'], rows: [
+        ['<span class="hl">ser</span>', '恒久的・本質的', '<span class="pt-cell">Ele <b>é</b> alegre.</span> 性格'],
+        ['<span class="hl">estar</span>', '一時的・現在の状態', '<span class="pt-cell">Ele <b>está</b> alegre.</span> 今喜んでいる'],
+        ['<span class="hl">ficar</span>', '状態への変化', '<span class="pt-cell">Ele <b>fica</b> alegre quando vence.</span>'],
+      ]},
+      { type: 'tip', text: '<span class="pt-inline">ficar</span> は「<b>変化のプロセス</b>」が含まれる。「ある状態に<b>なる</b>」というニュアンス。' },
+
+      { type: 'h4', num: '4', text: '形容詞は主語と性数一致する' },
+      { type: 'conj', rows: [
+        ['男性単数', 'O menino fica <strong>cansado</strong>.'],
+        ['女性単数', 'A menina fica <strong>cansada</strong>.'],
+        ['男性複数', 'Os meninos ficam <strong>cansados</strong>.'],
+        ['女性複数', 'As meninas ficam <strong>cansadas</strong>.'],
+      ]},
+      { type: 'warning', text: '形容詞の性数一致を忘れがち。日本語にはない概念なので意識的に練習する。' },
+
+      { type: 'h4', num: '5', text: 'ficar の現在形活用' },
+      { type: 'conj', rows: [['eu', '<strong>fico</strong>'], ['tu', '<strong>ficas</strong>'], ['ele/ela', '<strong>fica</strong>'], ['nós', '<strong>ficamos</strong>'], ['eles/elas', '<strong>ficam</strong>']]},
+
+      { type: 'h4', num: '6', text: 'よく使う ficar + 形容詞 の組み合わせ' },
+      { type: 'table', headers: ['表現', '意味'], rows: [
+        ['<span class="hl">ficar feliz / contente</span>', '嬉しくなる'],
+        ['<span class="hl">ficar triste</span>', '悲しくなる'],
+        ['<span class="hl">ficar zangado / chateado</span>', '怒る・むかつく'],
+        ['<span class="hl">ficar cansado</span>', '疲れる'],
+        ['<span class="hl">ficar nervoso</span>', '緊張する・イライラする'],
+        ['<span class="hl">ficar surpreendido</span>', '驚く'],
+        ['<span class="hl">ficar doente</span>', '病気になる'],
+        ['<span class="hl">ficar cheio</span>', 'お腹いっぱいになる'],
+        ['<span class="hl">ficar preocupado</span>', '心配する'],
+      ]},
+
+      { type: 'h4', num: '7', text: 'ficar com + 名詞 の派生' },
+      { type: 'p', text: '形容詞ではなく名詞と組み合わせる派生形も頻出：' },
+      { type: 'example', pt: 'Fico <strong>com</strong> medo.', jp: '怖くなる' },
+      { type: 'example', pt: 'Fico <strong>com</strong> fome.', jp: 'お腹がすいてくる' },
+      { type: 'example', pt: 'Fico <strong>com</strong> sono.', jp: '眠くなる' },
+      { type: 'tip', text: '<span class="pt-inline">ter fome</span>（今お腹がすいている）vs <span class="pt-inline">ficar com fome</span>（お腹がすいてくる＝変化）の違いに注意。' },
+
+      { type: 'h3', text: 'よくある間違い' },
+      { type: 'mistake', wrong: 'Eu fico cansado.（女性が言う場合）', right: 'Eu fico cansada.', reason: '性一致' },
+      { type: 'mistake', wrong: 'Ele é cansado depois de correr.', right: 'Ele fica cansado depois de correr.', reason: '変化なので ficar' },
+      { type: 'mistake', wrong: 'Estou ficando triste.', right: 'Estou a ficar triste.', reason: 'ヨーロッパポルトガル語の進行形は estar a + inf' },
+
+      { type: 'h3', text: '関連タグ' },
+      { type: 'related', tags: [{id: 'ter_substantivo', label: 'ter_substantivo'}, {future: true, label: 'ser_vs_estar（予定）'}]},
+    ],
+  },
+];
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+
+const tagListEl = document.getElementById('tagList');
+const noteViewEl = document.getElementById('noteView');
+const homeEl = document.getElementById('home');
+const noResultsEl = document.getElementById('noResults');
+const searchInput = document.getElementById('searchInput');
+
+function renderTagList(filter = '') {
+  const f = filter.toLowerCase().trim();
+  let visible = 0;
+  tagListEl.innerHTML = '';
+
+  NOTES.forEach((note, idx) => {
+    // Build searchable text
+    const haystack = [
+      note.id, note.name, note.pattern, note.theme, note.source,
+      ...note.sections.flatMap(s => Object.values(s).filter(v => typeof v === 'string'))
+    ].join(' ').toLowerCase();
+
+    if (f && !haystack.includes(f)) return;
+    visible++;
+
+    const hasNote = !!localStorage.getItem(`pt_note__${note.id}`);
+
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="tag-content">
+        <div class="tag-name">${highlight(note.name, f)}${hasNote ? '<span class="has-note-dot" title="メモあり"></span>' : ''}</div>
+        <div class="tag-pattern">${highlight(note.pattern, f)}</div>
+        <div class="tag-theme">${highlight(note.theme, f)}</div>
+      </div>
+      <span class="tag-arrow">→</span>
+    `;
+    li.addEventListener('click', () => openNote(note.id));
+    tagListEl.appendChild(li);
+  });
+
+  noResultsEl.style.display = visible === 0 ? 'block' : 'none';
+}
+
+function highlight(text, q) {
+  if (!q) return text;
+  const re = new RegExp(`(${escapeReg(q)})`, 'gi');
+  return text.replace(re, '<mark>$1</mark>');
+}
+function escapeReg(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+function openNote(id) {
+  const note = NOTES.find(n => n.id === id);
+  if (!note) return;
+
+  homeEl.style.display = 'none';
+  document.querySelector('.search-wrap').style.display = 'none';
+  noteViewEl.classList.add('active');
+  noteViewEl.innerHTML = renderNote(note);
+  bindNoteHandlers(note);
+  window.scrollTo(0, 0);
+  history.replaceState(null, '', `#${id}`);
+}
+
+function closeNote() {
+  homeEl.style.display = '';
+  document.querySelector('.search-wrap').style.display = '';
+  noteViewEl.classList.remove('active');
+  noteViewEl.innerHTML = '';
+  window.scrollTo(0, 0);
+  history.replaceState(null, '', window.location.pathname);
+  // refresh dots
+  renderTagList(searchInput.value);
+}
+
+function renderNote(note) {
+  const sectionsHtml = note.sections.map(renderSection).join('');
+  return `
+    <button class="back-link" onclick="closeNote()">← Índice に戻る</button>
+    <h1>#${note.id}</h1>
+    <h2>${note.name}</h2>
+    ${sectionsHtml}
+
+    <h3>追加メモ</h3>
+    <div class="notes-area">
+      <textarea class="notes-textarea" id="notes_${note.id}" placeholder="このタグについて気づいたこと、ネイティブから聞いた表現、混同しやすい点などを自由に書き留めてください…"></textarea>
+      <div class="notes-meta" id="meta_${note.id}">未保存</div>
+    </div>
+  `;
+}
+
+function renderSection(s) {
+  switch (s.type) {
+    case 'lead': return `<p class="lead">${s.text}</p>`;
+    case 'h3': return `<h3>${s.text}</h3>`;
+    case 'h4': return `<h4>${s.num ? `<span class="num">${s.num}.</span>` : ''}${s.text}</h4>`;
+    case 'p': return `<p>${s.text}</p>`;
+    case 'example':
+      return `<div class="example">
+        <div class="pt-line">${s.pt}</div>
+        ${s.jp ? `<div class="jp-line">${s.jp}</div>` : ''}
+        ${s.source ? `<div class="source">— ${s.source}</div>` : ''}
+      </div>`;
+    case 'table': {
+      const head = s.headers.map(h => `<th>${h}</th>`).join('');
+      const body = s.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
+      return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
+    }
+    case 'conj': {
+      const body = s.rows.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+      return `<table class="conj"><tbody>${body}</tbody></table>`;
+    }
+    case 'warning': return `<div class="callout warning">${s.text}</div>`;
+    case 'tip': return `<div class="callout tip">${s.text}</div>`;
+    case 'mistake':
+      return `<div class="mistake-row">
+        <span class="wrong">${s.wrong}</span>
+        <span class="right">${s.right}</span>
+        ${s.reason ? `<div class="reason">— ${s.reason}</div>` : ''}
+      </div>`;
+    case 'related': {
+      const tags = s.tags.map(t => {
+        if (t.future) return `<span class="related-tag future">${t.label}</span>`;
+        return `<span class="related-tag" data-id="${t.id}">${t.label}</span>`;
+      }).join('');
+      return `<div class="related-tags">${tags}</div>`;
+    }
+    default: return '';
+  }
+}
+
+function bindNoteHandlers(note) {
+  // Related tag click
+  noteViewEl.querySelectorAll('.related-tag[data-id]').forEach(el => {
+    el.addEventListener('click', () => openNote(el.dataset.id));
+  });
+
+  // Notes load + autosave
+  const ta = document.getElementById(`notes_${note.id}`);
+  const meta = document.getElementById(`meta_${note.id}`);
+  const key = `pt_note__${note.id}`;
+  const stored = localStorage.getItem(key);
+  if (stored) {
+    try {
+      const obj = JSON.parse(stored);
+      ta.value = obj.text || '';
+      meta.textContent = obj.savedAt ? `最終保存: ${formatDate(obj.savedAt)}` : '';
+    } catch {
+      ta.value = stored;
+    }
+  }
+
+  let saveTimer;
+  ta.addEventListener('input', () => {
+    clearTimeout(saveTimer);
+    meta.textContent = '入力中…';
+    saveTimer = setTimeout(() => {
+      const obj = { text: ta.value, savedAt: Date.now() };
+      localStorage.setItem(key, JSON.stringify(obj));
+      meta.innerHTML = `<span class="saved-flash">✓ 保存しました</span> · ${formatDate(obj.savedAt)}`;
+      setTimeout(() => {
+        meta.textContent = `最終保存: ${formatDate(obj.savedAt)}`;
+      }, 1400);
+    }, 500);
+  });
+}
+
+function formatDate(ts) {
+  const d = new Date(ts);
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}/${pad(d.getMonth()+1)}/${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+searchInput.addEventListener('input', e => renderTagList(e.target.value));
+renderTagList();
+
+// Deep-link on load
+const initialHash = window.location.hash.slice(1);
+if (initialHash && NOTES.find(n => n.id === initialHash)) {
+  openNote(initialHash);
+}
+
+// Browser back support
+window.addEventListener('popstate', () => {
+  const h = window.location.hash.slice(1);
+  if (h && NOTES.find(n => n.id === h)) {
+    openNote(h);
+  } else {
+    closeNote();
+  }
+});
+</script>
+
+</body>
+</html>
