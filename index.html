@@ -601,6 +601,549 @@
 
   /* Selection */
   ::selection { background: var(--azulejo); color: var(--paper); }
+
+  /* ============== FSRS / Study UI ============== */
+  nav.tabs {
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    z-index: 20;
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 0;
+    padding-top: 8px;
+  }
+  nav.tabs button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 14px 4px;
+    font-family: var(--serif-display);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+  }
+  nav.tabs button.active {
+    color: var(--ink);
+    border-bottom-color: var(--terracotta);
+  }
+  nav.tabs button:hover { color: var(--ink-soft); }
+  nav.tabs button .badge {
+    display: inline-block;
+    background: var(--terracotta);
+    color: var(--paper);
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-left: 4px;
+    font-family: var(--mono);
+    letter-spacing: 0;
+    vertical-align: 1px;
+    min-width: 18px;
+    text-align: center;
+  }
+  nav.tabs button.active .badge { background: var(--azulejo); }
+
+  .page { display: none; }
+  .page.active { display: block; }
+
+  .tag-list .tag-meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-fade);
+    letter-spacing: 0.04em;
+    flex-wrap: wrap;
+  }
+  .tag-list .tag-meta .due-now {
+    color: var(--terracotta);
+    font-weight: 500;
+  }
+  .tag-list .tag-meta .has-note { color: var(--gold); }
+
+  .study-launch {
+    display: flex;
+    gap: 8px;
+    margin: 16px 0 36px;
+    flex-wrap: wrap;
+  }
+  .study-btn {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 13px;
+    padding: 10px 18px;
+    background: var(--azulejo);
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: background 0.2s;
+  }
+  .study-btn:hover { background: var(--azulejo-deep); }
+  .study-btn:disabled,
+  .study-btn.disabled {
+    background: var(--rule);
+    color: var(--ink-fade);
+    cursor: default;
+  }
+  .study-btn .count {
+    font-family: var(--mono);
+    font-size: 11px;
+    margin-left: 6px;
+    background: rgba(255,255,255,0.2);
+    padding: 1px 6px;
+    border-radius: 10px;
+  }
+
+  .study-tag-card {
+    padding: 16px 0;
+    border-bottom: 1px dotted var(--rule);
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .study-tag-card .stc-info { flex: 1; min-width: 0; }
+  .study-tag-card .stc-name {
+    font-family: var(--serif-display);
+    font-size: 17px;
+    color: var(--ink);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .study-tag-card .stc-stats {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-fade);
+    letter-spacing: 0.04em;
+  }
+  .study-tag-card .stc-stats .due { color: var(--terracotta); font-weight: 500; }
+  .study-tag-card .stc-stats .new { color: var(--azulejo); }
+  .study-tag-card .stc-stats .learned { color: var(--good-border); }
+  .study-tag-card .stc-btn {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 12px;
+    padding: 8px 14px;
+    background: var(--paper-deep);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    cursor: pointer;
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+  }
+  .study-tag-card .stc-btn:hover {
+    background: var(--azulejo);
+    color: var(--paper);
+    border-color: var(--azulejo);
+  }
+  .study-tag-card .stc-btn:disabled {
+    background: var(--paper-deep);
+    color: var(--ink-fade);
+    border-color: var(--rule);
+    cursor: default;
+  }
+
+  /* Study overlay */
+  .study-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--paper);
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .study-overlay.active { display: flex; }
+  .study-overlay::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4 0 0 0 0 0.35 0 0 0 0 0.25 0 0 0 0.05 0'/></filter><rect width='180' height='180' filter='url(%23n)'/></svg>");
+  }
+  .study-header {
+    position: relative;
+    z-index: 1;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper);
+  }
+  .study-close {
+    background: none;
+    border: none;
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 13px;
+    color: var(--ink-fade);
+    cursor: pointer;
+    letter-spacing: 0.06em;
+  }
+  .study-close:hover { color: var(--terracotta); }
+  .study-progress {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-fade);
+    letter-spacing: 0.05em;
+  }
+  .study-body {
+    flex: 1;
+    padding: 32px 24px 60px;
+    max-width: 720px;
+    margin: 0 auto;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+  .study-tag-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-fade);
+    letter-spacing: 0.06em;
+    margin-bottom: 8px;
+    text-transform: lowercase;
+  }
+  a.study-tag-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--ink-fade);
+    padding-bottom: 1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  a.study-tag-link:hover,
+  a.study-tag-link:focus {
+    color: var(--azulejo);
+    border-bottom-color: var(--azulejo);
+    border-bottom-style: solid;
+  }
+  a.study-tag-link .ext-arrow {
+    font-size: 9px;
+    opacity: 0.6;
+    transition: transform 0.2s, opacity 0.2s;
+    text-transform: none;
+  }
+  a.study-tag-link:hover .ext-arrow {
+    transform: translate(1px, -1px);
+    opacity: 1;
+  }
+  .study-prompt-label {
+    font-family: var(--serif-display);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+  .study-prompt {
+    font-family: var(--jp);
+    font-size: 22px;
+    line-height: 1.6;
+    color: var(--ink);
+    margin-bottom: 32px;
+    font-weight: 500;
+  }
+  .study-reveal-btn {
+    width: 100%;
+    padding: 18px;
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 16px;
+    background: var(--azulejo);
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.06em;
+  }
+  .study-reveal-btn:hover { background: var(--azulejo-deep); }
+  .study-answer {
+    margin-top: 28px;
+    padding-top: 28px;
+    border-top: 1px double var(--rule);
+    animation: fadeIn 0.3s;
+  }
+  .study-answer-label {
+    font-family: var(--serif-display);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--good-border);
+    margin-bottom: 14px;
+    font-style: italic;
+  }
+  .study-answer-pt {
+    font-family: var(--serif-body);
+    font-style: italic;
+    font-size: 26px;
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .study-answer-pt strong {
+    background: linear-gradient(to bottom, transparent 60%, var(--highlight) 60%);
+    font-weight: 600;
+  }
+  .study-answer-source {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 12px;
+    color: var(--ink-fade);
+    margin-bottom: 28px;
+    letter-spacing: 0.04em;
+  }
+  .rating-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 20px;
+  }
+  .rating-btn {
+    padding: 14px 4px;
+    font-family: var(--serif-display);
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--rule);
+    background: var(--paper-deep);
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .rating-btn:active { transform: scale(0.97); }
+  .rating-btn .label { font-style: italic; letter-spacing: 0.04em; }
+  .rating-btn .interval {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-fade);
+    font-style: normal;
+    letter-spacing: 0;
+  }
+  .rating-btn.again { border-color: #c2664a; }
+  .rating-btn.again:hover { background: #f4dccc; }
+  .rating-btn.hard { border-color: #c2964a; }
+  .rating-btn.hard:hover { background: #f4e6cc; }
+  .rating-btn.good { border-color: #5a8a4a; }
+  .rating-btn.good:hover { background: #d8e6cc; color: #2a3a1a; }
+  .rating-btn.easy { border-color: var(--azulejo); }
+  .rating-btn.easy:hover { background: #cce0ec; color: var(--azulejo-deep); }
+
+  .study-empty, .study-done {
+    text-align: center;
+    padding: 60px 20px;
+    font-family: var(--jp);
+  }
+  .study-empty .ornament,
+  .study-done .ornament {
+    font-size: 28px;
+    color: var(--gold);
+    margin-bottom: 16px;
+    letter-spacing: 0.4em;
+  }
+  .study-empty .title,
+  .study-done h2 {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 26px;
+    color: var(--ink);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .study-empty p { font-size: 14px; color: var(--ink-fade); }
+  .study-done .stats {
+    display: inline-block;
+    text-align: left;
+    background: var(--paper-deep);
+    padding: 18px 26px;
+    border: 1px solid var(--rule);
+    margin-top: 12px;
+  }
+  .study-done .stats div { margin: 4px 0; font-size: 14px; color: var(--ink-soft); }
+  .study-done .stats span { font-family: var(--mono); margin-left: 12px; color: var(--ink); font-size: 13px; }
+  .study-done .next-actions {
+    margin-top: 28px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 16px 0 32px;
+  }
+  .stat-card {
+    padding: 18px;
+    background: var(--paper-deep);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+  }
+  .stat-card .stat-label {
+    font-family: var(--serif-display);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-fade);
+    margin-bottom: 8px;
+    font-style: italic;
+  }
+  .stat-card .stat-value {
+    font-family: var(--serif-display);
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1;
+    font-variation-settings: "opsz" 144;
+  }
+  .stat-card .stat-value.terracotta { color: var(--terracotta); }
+  .stat-card .stat-value.azulejo { color: var(--azulejo); }
+  .stat-card .stat-value.gold { color: var(--gold); }
+  .stat-card .stat-value.green { color: var(--good-border); }
+  .stat-card .stat-sub {
+    font-family: var(--jp);
+    font-size: 11px;
+    color: var(--ink-fade);
+    margin-top: 6px;
+  }
+
+  .upcoming-chart {
+    margin-top: 16px;
+    background: var(--paper-deep);
+    padding: 18px;
+    border: 1px solid var(--rule);
+  }
+  .upcoming-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 5px 0;
+    font-size: 13px;
+  }
+  .upcoming-row .day {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-fade);
+    width: 70px;
+    flex-shrink: 0;
+  }
+  .upcoming-row .bar-wrap { flex: 1; height: 14px; }
+  .upcoming-row .bar {
+    height: 14px;
+    background: linear-gradient(to right, var(--azulejo), var(--gold));
+    min-width: 2px;
+    transition: width 0.3s;
+  }
+  .upcoming-row .count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    min-width: 28px;
+    text-align: right;
+  }
+
+  /* Settings */
+  .settings-section {
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px dotted var(--rule);
+  }
+  .settings-section h3 {
+    font-family: var(--serif-display);
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .settings-section p {
+    font-family: var(--jp);
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+  .settings-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .action-btn {
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 13px;
+    padding: 10px 20px;
+    background: var(--paper-deep);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: all 0.2s;
+  }
+  .action-btn:hover {
+    background: var(--azulejo);
+    color: var(--paper);
+    border-color: var(--azulejo);
+  }
+  .action-btn.danger { color: var(--terracotta); border-color: #d4a99e; }
+  .action-btn.danger:hover {
+    background: var(--terracotta);
+    color: var(--paper);
+    border-color: var(--terracotta);
+  }
+  .file-input { display: none; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink);
+    color: var(--paper);
+    padding: 12px 24px;
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    border-radius: 2px;
+    z-index: 200;
+    transition: transform 0.3s ease;
+    pointer-events: none;
+    max-width: 90%;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast.error { background: var(--terracotta); }
+
+  @media (max-width: 480px) {
+    nav.tabs button { font-size: 10px; padding: 12px 2px; letter-spacing: 0.1em; }
+    .study-prompt { font-size: 19px; }
+    .study-answer-pt { font-size: 22px; }
+    .rating-btn { font-size: 11px; padding: 12px 2px; }
+    .rating-btn .interval { font-size: 9px; }
+    .stats-grid { gap: 8px; }
+    .stat-card { padding: 14px; }
+    .stat-card .stat-value { font-size: 26px; }
+  }
 </style>
 </head>
 <body>
@@ -613,28 +1156,72 @@
     <div class="sub">A1 〜 A2 学習者のための文法骨格集</div>
   </header>
 
-  <!-- Search -->
-  <div class="search-wrap">
-    <input type="text" class="search-input" id="searchInput" placeholder="タグ・パターン・例文・日本語で検索…">
-  </div>
+  <nav class="tabs">
+    <button data-tab="index" class="active">Índice</button>
+    <button data-tab="study">Estudar<span class="badge" id="dueBadge" style="display:none;">0</span></button>
+    <button data-tab="stats">Estatísticas</button>
+    <button data-tab="settings">Definições</button>
+  </nav>
 
-  <!-- HOME: Tag index -->
-  <main id="home" class="tag-index">
-    <h2 class="index-title">— Índice —</h2>
-    <ol class="tag-list" id="tagList"></ol>
-    <div class="no-results" id="noResults" style="display:none;">該当するタグが見つかりません</div>
-  </main>
+  <!-- PAGE: INDEX -->
+  <section id="page-index" class="page active">
+    <div class="search-wrap" style="margin-top:24px;">
+      <input type="text" class="search-input" id="searchInput" placeholder="タグ・パターン・例文・日本語で検索…">
+    </div>
 
-  <!-- Note detail view -->
-  <article id="noteView" class="note-view"></article>
+    <main id="home" class="tag-index">
+      <h2 class="index-title">— Índice —</h2>
+      <ol class="tag-list" id="tagList"></ol>
+      <div class="no-results" id="noResults" style="display:none;">該当するタグが見つかりません</div>
+    </main>
+
+    <article id="noteView" class="note-view"></article>
+  </section>
+
+  <!-- PAGE: STUDY -->
+  <section id="page-study" class="page">
+    <h2 class="index-title" style="margin-top:24px;">— Estudar —</h2>
+    <div id="studyLauncher"></div>
+  </section>
+
+  <!-- PAGE: STATS -->
+  <section id="page-stats" class="page">
+    <h2 class="index-title" style="margin-top:24px;">— Estatísticas —</h2>
+    <div id="statsContent"></div>
+  </section>
+
+  <!-- PAGE: SETTINGS -->
+  <section id="page-settings" class="page">
+    <h2 class="index-title" style="margin-top:24px;">— Definições —</h2>
+    <div id="settingsContent"></div>
+  </section>
 
   <footer>
     <div class="ornament">❦ · ❦ · ❦</div>
     Caderno · A1→A2 · 携帯端末でホーム画面に追加して使用可<br>
-    メモはこの端末のブラウザに自動保存されます
+    学習データは端末のブラウザに保存されます
   </footer>
 
 </div>
+
+<!-- Study session overlay -->
+<div class="study-overlay" id="studyOverlay">
+  <div class="study-header">
+    <button class="study-close" id="studyClose">← 中断</button>
+    <div class="study-progress" id="studyProgress">0 / 0</div>
+  </div>
+  <div class="study-body" id="studyBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<input type="file" id="importFileInput" class="file-input" accept=".json,application/json">
+
+<script type="module">
+import { createEmptyCard, fsrs, Rating, State } from 'https://cdn.jsdelivr.net/npm/ts-fsrs@4.7.1/+esm';
+window.tsfsrs = { createEmptyCard, fsrs, Rating, State };
+window.dispatchEvent(new Event('fsrs-ready'));
+</script>
 
 <script>
 /* ============================================================
@@ -682,6 +1269,18 @@ const NOTES = [
 
       { type: 'h3', text: '関連タグ' },
       { type: 'related', tags: [{id: 'ir_ate_a_lugar', label: 'ir_ate_a_lugar'}, {future: true, label: '今後追加予定'}]},
+    ],
+    cards: [
+      { pt: 'Tu vais à escola com a tua mochila.', jp: '君はリュックを持って学校へ行く。' },
+      { pt: 'Ela vai ao café com um livro.', jp: '彼女は本を持ってカフェへ行く。' },
+      { pt: 'O meu pai vai ao trabalho com o portátil.', jp: '父はノートパソコンを持って仕事に行く。' },
+      { pt: 'Os miúdos vão ao parque com uma bola.', jp: '子供たちはボールを持って公園へ行く。' },
+      { pt: 'Vamos ao cinema com pipocas.', jp: 'ポップコーンを持って映画館へ行く。' },
+      { pt: 'Ele vai à estação com uma mala grande.', jp: '彼は大きなスーツケースを持って駅へ行く。' },
+      { pt: 'Vou ao médico com os exames.', jp: '検査結果を持って医者に行く。' },
+      { pt: 'Vou à festa com um presente.', jp: 'プレゼントを持ってパーティーへ行く。' },
+      { pt: 'Tu vais ao ginásio com uma garrafa de água.', jp: '君は水のボトルを持ってジムへ行く。' },
+      { pt: 'As minhas amigas vão ao restaurante com flores.', jp: '友達(女)たちは花を持ってレストランへ行く。' },
     ],
   },
 
@@ -747,6 +1346,18 @@ const NOTES = [
       { type: 'h3', text: '関連タグ' },
       { type: 'related', tags: [{id: 'ir_a_lugar_com_objeto', label: 'ir_a_lugar_com_objeto'}, {future: true, label: 'pronomes_indiretos（予定）'}]},
     ],
+    cards: [
+      { pt: 'Tu dás uma flor à tua mãe.', jp: '君はお母さんに花をあげる。' },
+      { pt: 'Ela dá um beijo ao filho.', jp: '彼女は息子にキスをする。' },
+      { pt: 'Nós damos um presente aos avós.', jp: '私たちは祖父母にプレゼントをあげる。' },
+      { pt: 'Ele dá comida ao cão todos os dias.', jp: '彼は毎日犬に餌をあげる。' },
+      { pt: 'Eu dou uma boleia à minha colega.', jp: '私は同僚(女)を車に乗せてあげる。' },
+      { pt: 'A professora dá um livro ao aluno.', jp: '先生は生徒に本をあげる。' },
+      { pt: 'Tu dás a chave ao porteiro.', jp: '君は守衛さんに鍵を渡す。' },
+      { pt: 'Damos um conselho ao nosso amigo.', jp: '私たちは友達にアドバイスをする。' },
+      { pt: 'As crianças dão desenhos à avó.', jp: '子供たちはおばあちゃんに絵をあげる。' },
+      { pt: 'O João dá uma carta à Maria.', jp: 'ジョアンはマリアに手紙を渡す。' },
+    ],
   },
 
   {
@@ -796,6 +1407,18 @@ const NOTES = [
 
       { type: 'h3', text: '関連タグ' },
       { type: 'related', tags: [{future: true, label: 'querer_infinitivo（予定）'}, {future: true, label: 'queria_pedido（予定）'}]},
+    ],
+    cards: [
+      { pt: 'Tu queres uma sandes?', jp: 'サンドイッチ要る？' },
+      { pt: 'Ela quer a chave do carro.', jp: '彼女は車の鍵を欲しがっている。' },
+      { pt: 'Ele quer um copo de água.', jp: '彼は水を一杯欲しがっている。' },
+      { pt: 'As crianças querem gelado.', jp: '子供たちはアイスを欲しがる。' },
+      { pt: 'Eu quero o menu.', jp: 'メニューをください。' },
+      { pt: 'Tu queres o jornal de hoje?', jp: '今日の新聞要る？' },
+      { pt: 'A minha irmã quer um cão.', jp: '妹は犬を欲しがっている。' },
+      { pt: 'Queremos uma mesa para dois.', jp: '二人用のテーブルをお願いします。' },
+      { pt: 'Eles querem mais tempo.', jp: '彼らはもっと時間が欲しい。' },
+      { pt: 'Elas querem o mesmo prato.', jp: '彼女たちは同じ料理を頼みたがる。' },
     ],
   },
 
@@ -868,6 +1491,18 @@ const NOTES = [
       { type: 'h3', text: '関連タグ' },
       { type: 'related', tags: [{id: 'ir_a_lugar_com_objeto', label: 'ir_a_lugar_com_objeto'}, {future: true, label: 'pronomes_tonicos（予定）'}]},
     ],
+    cards: [
+      { pt: 'O cão corre atrás do gato.', jp: '犬が猫を追いかける。' },
+      { pt: 'Eu corro atrás do autocarro.', jp: 'バスを追いかけて走る。' },
+      { pt: 'A polícia corre atrás do ladrão.', jp: '警察が泥棒を追いかける。' },
+      { pt: 'Tu vais atrás dos teus amigos.', jp: '君は友達の後ろを行く。' },
+      { pt: 'Nós andamos atrás da professora.', jp: '私たちは先生の後ろを歩く。' },
+      { pt: 'Os miúdos correm atrás da bola.', jp: '子供たちはボールを追いかける。' },
+      { pt: 'Ela vem atrás de mim.', jp: '彼女が私の後ろから来る。' },
+      { pt: 'O carro vai atrás do camião.', jp: '車がトラックの後ろを行く。' },
+      { pt: 'Eu sento-me atrás do condutor.', jp: '私は運転手の後ろに座る。' },
+      { pt: 'Tu corres atrás do comboio.', jp: '君は電車を追いかけて走る。' },
+    ],
   },
 
   {
@@ -925,6 +1560,18 @@ const NOTES = [
 
       { type: 'h3', text: '関連タグ' },
       { type: 'related', tags: [{future: true, label: 'ter_de_infinitivo（予定）'}, {future: true, label: 'haver_existencial（予定）'}]},
+    ],
+    cards: [
+      { pt: 'Tu tens um problema?', jp: '問題ある？' },
+      { pt: 'Ela tem uma reunião amanhã.', jp: '彼女は明日会議がある。' },
+      { pt: 'Nós temos uma surpresa para ti.', jp: '君にサプライズがあるよ。' },
+      { pt: 'Eles têm sorte.', jp: '彼らは運がいい。' },
+      { pt: 'Eu tenho frio.', jp: '私は寒い。' },
+      { pt: 'Tu tens razão.', jp: '君の言う通りだ。' },
+      { pt: 'A minha avó tem uma casa no campo.', jp: '祖母は田舎に家を持っている。' },
+      { pt: 'Temos um exame na sexta-feira.', jp: '金曜日に試験があります。' },
+      { pt: 'As crianças têm medo do escuro.', jp: '子供たちは暗闇を怖がる。' },
+      { pt: 'Eu tenho uma dúvida.', jp: '疑問があります。' },
     ],
   },
 
@@ -986,6 +1633,18 @@ const NOTES = [
 
       { type: 'h3', text: '関連タグ' },
       { type: 'related', tags: [{id: 'ir_a_lugar_com_objeto', label: 'ir_a_lugar_com_objeto'}, {future: true, label: 'ate_tempo（予定）'}]},
+    ],
+    cards: [
+      { pt: 'Eu vou até ao fim da rua.', jp: '通りの突き当たりまで行く。' },
+      { pt: 'Tu vais até à esquina?', jp: '角まで行く？' },
+      { pt: 'Ela vai até à janela.', jp: '彼女は窓まで行く。' },
+      { pt: 'Nós vamos até ao porto.', jp: '私たちは港まで行く。' },
+      { pt: 'Ele vai até à porta e abre-a.', jp: '彼はドアまで行って開ける。' },
+      { pt: 'Os turistas vão até à praia a pé.', jp: '観光客はビーチまで歩いて行く。' },
+      { pt: 'Vou até ao café da esquina.', jp: '角のカフェまで行く。' },
+      { pt: 'Vamos até ao topo da montanha.', jp: '山の頂上まで行きます。' },
+      { pt: 'As raparigas vão até à biblioteca.', jp: '女の子たちは図書館まで行く。' },
+      { pt: 'O autocarro vai até à estação.', jp: 'バスは駅まで行く。' },
     ],
   },
 
@@ -1064,13 +1723,250 @@ const NOTES = [
       { type: 'h3', text: '関連タグ' },
       { type: 'related', tags: [{id: 'ter_substantivo', label: 'ter_substantivo'}, {future: true, label: 'ser_vs_estar（予定）'}]},
     ],
+    cards: [
+      { pt: 'Eu fico contente com a notícia.', jp: 'そのニュースを聞いて嬉しくなる。' },
+      { pt: 'Tu ficas nervoso antes dos exames?', jp: '試験前は緊張する？' },
+      { pt: 'Ela fica triste quando chove.', jp: '彼女は雨が降ると悲しくなる。' },
+      { pt: 'Nós ficamos surpreendidos com o resultado.', jp: '結果に驚く。' },
+      { pt: 'Ele fica zangado quando perde.', jp: '彼は負けると怒る。' },
+      { pt: 'Os meus pais ficam preocupados comigo.', jp: '両親は私のことを心配する。' },
+      { pt: 'Eu fico cheio depois do jantar.', jp: '夕食後はお腹いっぱいになる。' },
+      { pt: 'A minha filha fica feliz com pouco.', jp: '娘は少しのことで喜ぶ。' },
+      { pt: 'Ficamos cansados depois do trabalho.', jp: '私たちは仕事の後疲れる。' },
+      { pt: 'As crianças ficam aborrecidas em casa.', jp: '子供たちは家で退屈する。' },
+    ],
   },
 ];
 
 /* ============================================================
-   RENDERING
+   FSRS scheduler (loaded async via ESM)
    ============================================================ */
+let fsrsLib = null;          // { createEmptyCard, fsrs, Rating, State }
+let scheduler = null;
+let fsrsReady = false;
+const fsrsReadyCallbacks = [];
 
+window.addEventListener('fsrs-ready', () => {
+  fsrsLib = window.tsfsrs;
+  scheduler = fsrsLib.fsrs({
+    request_retention: 0.9,
+    enable_fuzz: true,
+    enable_short_term: true,
+  });
+  fsrsReady = true;
+  fsrsReadyCallbacks.forEach(cb => cb());
+  fsrsReadyCallbacks.length = 0;
+  // refresh UI
+  refreshAll();
+});
+
+function whenFsrsReady(cb) {
+  if (fsrsReady) cb();
+  else fsrsReadyCallbacks.push(cb);
+}
+
+/* ============================================================
+   Card extraction & state management
+   ============================================================ */
+const STORAGE_PREFIX = 'pt_caderno__';
+const CARDS_KEY = STORAGE_PREFIX + 'cards';     // { [cardId]: cardState }
+const NOTES_KEY_PREFIX = 'pt_note__';           // existing personal notes
+const STATS_KEY = STORAGE_PREFIX + 'stats';     // { reviewsByDate: { 'yyyy-mm-dd': n } }
+
+// Build the canonical list of (cardId, tagId, pt, jp, source) from NOTES.
+// IDs are stable: based on stripped pt content + tag id, so order changes don't matter.
+function stripHtml(s) {
+  return s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function getAllCards() {
+  const cards = [];
+  NOTES.forEach(note => {
+    // Examples in sections (the ones marked card: true OR by default we card them all? — only marked)
+    // Actually we card ALL examples for richer practice, since they're hand-curated.
+    note.sections.forEach(s => {
+      if (s.type === 'example') {
+        const pt = stripHtml(s.pt);
+        const cardId = `${note.id}::${pt}`;
+        cards.push({
+          cardId,
+          tagId: note.id,
+          pt: s.pt,           // keep formatting for display
+          ptPlain: pt,
+          jp: s.jp || '',
+          source: s.source || '',
+          origin: 'example',
+        });
+      }
+    });
+    // Variations (cards array)
+    if (Array.isArray(note.cards)) {
+      note.cards.forEach(c => {
+        const pt = c.pt;
+        const cardId = `${note.id}::${pt}`;
+        cards.push({
+          cardId,
+          tagId: note.id,
+          pt: c.pt,
+          ptPlain: pt,
+          jp: c.jp || '',
+          source: '',
+          origin: 'variation',
+        });
+      });
+    }
+  });
+  return cards;
+}
+
+function loadCardStates() {
+  try {
+    const raw = localStorage.getItem(CARDS_KEY);
+    if (!raw) return {};
+    const obj = JSON.parse(raw);
+    // Restore Date objects from ISO strings
+    Object.values(obj).forEach(state => {
+      if (state.due) state.due = new Date(state.due);
+      if (state.last_review) state.last_review = new Date(state.last_review);
+    });
+    return obj;
+  } catch (e) {
+    console.warn('Failed to parse card states', e);
+    return {};
+  }
+}
+
+function saveCardStates(states) {
+  // Serialize Date objects to ISO strings for storage
+  const serialized = {};
+  Object.entries(states).forEach(([k, v]) => {
+    serialized[k] = { ...v };
+    if (v.due instanceof Date) serialized[k].due = v.due.toISOString();
+    if (v.last_review instanceof Date) serialized[k].last_review = v.last_review.toISOString();
+  });
+  localStorage.setItem(CARDS_KEY, JSON.stringify(serialized));
+}
+
+function getCardState(cardId, states) {
+  if (states[cardId]) return states[cardId];
+  if (!fsrsLib) return null;
+  // create empty card
+  return fsrsLib.createEmptyCard();
+}
+
+function loadStats() {
+  try {
+    const raw = localStorage.getItem(STATS_KEY);
+    return raw ? JSON.parse(raw) : { reviewsByDate: {} };
+  } catch {
+    return { reviewsByDate: {} };
+  }
+}
+
+function saveStats(stats) {
+  localStorage.setItem(STATS_KEY, JSON.stringify(stats));
+}
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function recordReview() {
+  const s = loadStats();
+  const k = todayKey();
+  s.reviewsByDate[k] = (s.reviewsByDate[k] || 0) + 1;
+  saveStats(s);
+}
+
+/* ============================================================
+   Per-tag card statistics
+   ============================================================ */
+function getTagStats(tagId) {
+  const cards = getAllCards().filter(c => c.tagId === tagId);
+  const states = loadCardStates();
+  const now = new Date();
+  let dueNow = 0, newCount = 0, learning = 0, learned = 0;
+  cards.forEach(c => {
+    const st = states[c.cardId];
+    if (!st) {
+      newCount++;
+      dueNow++; // new cards are always available
+    } else {
+      const due = st.due instanceof Date ? st.due : new Date(st.due);
+      if (due <= now) dueNow++;
+      // State 0=New, 1=Learning, 2=Review, 3=Relearning
+      if (st.state === 2) learned++;
+      else if (st.state === 1 || st.state === 3) learning++;
+      else newCount++;
+    }
+  });
+  return { total: cards.length, dueNow, newCount, learning, learned };
+}
+
+function getOverallStats() {
+  const allCards = getAllCards();
+  const states = loadCardStates();
+  const now = new Date();
+  let dueNow = 0, newCount = 0, learning = 0, learned = 0;
+  // upcoming days
+  const upcoming = {}; // day offset -> count
+  for (let i = 0; i < 14; i++) upcoming[i] = 0;
+  
+  allCards.forEach(c => {
+    const st = states[c.cardId];
+    if (!st) {
+      newCount++;
+      dueNow++;
+      upcoming[0]++;
+    } else {
+      const due = st.due instanceof Date ? st.due : new Date(st.due);
+      if (due <= now) dueNow++;
+      if (st.state === 2) learned++;
+      else if (st.state === 1 || st.state === 3) learning++;
+      else newCount++;
+      // upcoming
+      const diffMs = due - now;
+      const dayOffset = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+      if (dayOffset < 14) upcoming[dayOffset]++;
+    }
+  });
+  
+  // today's reviews
+  const stats = loadStats();
+  const todayReviews = stats.reviewsByDate[todayKey()] || 0;
+  // last 7 days
+  const last7 = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const k = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    last7.push({ date: k, count: stats.reviewsByDate[k] || 0 });
+  }
+  
+  return {
+    total: allCards.length,
+    dueNow, newCount, learning, learned,
+    upcoming, todayReviews, last7,
+  };
+}
+
+/* ============================================================
+   Toast helper
+   ============================================================ */
+const toastEl = document.getElementById('toast');
+let toastTimer = null;
+function showToast(msg, isError = false) {
+  toastEl.textContent = msg;
+  toastEl.classList.toggle('error', isError);
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+}
+
+/* ============================================================
+   RENDERING — Tag list
+   ============================================================ */
 const tagListEl = document.getElementById('tagList');
 const noteViewEl = document.getElementById('noteView');
 const homeEl = document.getElementById('home');
@@ -1082,8 +1978,7 @@ function renderTagList(filter = '') {
   let visible = 0;
   tagListEl.innerHTML = '';
 
-  NOTES.forEach((note, idx) => {
-    // Build searchable text
+  NOTES.forEach((note) => {
     const haystack = [
       note.id, note.name, note.pattern, note.theme, note.source,
       ...note.sections.flatMap(s => Object.values(s).filter(v => typeof v === 'string'))
@@ -1092,14 +1987,21 @@ function renderTagList(filter = '') {
     if (f && !haystack.includes(f)) return;
     visible++;
 
-    const hasNote = !!localStorage.getItem(`pt_note__${note.id}`);
+    const hasNote = !!localStorage.getItem(NOTES_KEY_PREFIX + note.id);
+    const ts = getTagStats(note.id);
+    
+    const metaItems = [`${ts.total} cards`];
+    if (ts.dueNow > 0) metaItems.push(`<span class="due-now">${ts.dueNow} 期日</span>`);
+    if (ts.learned > 0) metaItems.push(`<span style="color:var(--good-border);">${ts.learned} 習得</span>`);
+    if (hasNote) metaItems.push(`<span class="has-note">✎ メモ</span>`);
 
     const li = document.createElement('li');
     li.innerHTML = `
       <div class="tag-content">
-        <div class="tag-name">${highlight(note.name, f)}${hasNote ? '<span class="has-note-dot" title="メモあり"></span>' : ''}</div>
+        <div class="tag-name">${highlight(note.name, f)}</div>
         <div class="tag-pattern">${highlight(note.pattern, f)}</div>
         <div class="tag-theme">${highlight(note.theme, f)}</div>
+        <div class="tag-meta">${metaItems.join(' · ')}</div>
       </div>
       <span class="tag-arrow">→</span>
     `;
@@ -1120,10 +2022,10 @@ function escapeReg(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function openNote(id) {
   const note = NOTES.find(n => n.id === id);
   if (!note) return;
-
   homeEl.style.display = 'none';
-  document.querySelector('.search-wrap').style.display = 'none';
+  document.querySelector('#page-index .search-wrap').style.display = 'none';
   noteViewEl.classList.add('active');
+  noteViewEl.style.display = '';
   noteViewEl.innerHTML = renderNote(note);
   bindNoteHandlers(note);
   window.scrollTo(0, 0);
@@ -1132,21 +2034,31 @@ function openNote(id) {
 
 function closeNote() {
   homeEl.style.display = '';
-  document.querySelector('.search-wrap').style.display = '';
+  document.querySelector('#page-index .search-wrap').style.display = '';
   noteViewEl.classList.remove('active');
+  noteViewEl.style.display = 'none';
   noteViewEl.innerHTML = '';
   window.scrollTo(0, 0);
   history.replaceState(null, '', window.location.pathname);
-  // refresh dots
   renderTagList(searchInput.value);
 }
 
 function renderNote(note) {
   const sectionsHtml = note.sections.map(renderSection).join('');
+  const ts = getTagStats(note.id);
+  const dueLabel = ts.dueNow > 0 ? `今すぐ復習 <span class="count">${ts.dueNow}</span>` : 'カード（期日なし）';
   return `
     <button class="back-link" onclick="closeNote()">← Índice に戻る</button>
     <h1>#${note.id}</h1>
     <h2>${note.name}</h2>
+    <div class="study-launch">
+      <button class="study-btn ${ts.dueNow === 0 ? 'disabled' : ''}" 
+              ${ts.dueNow === 0 ? 'disabled' : ''}
+              onclick="startStudy('${note.id}')">
+        ${dueLabel}
+      </button>
+      ${ts.total > ts.dueNow ? `<button class="study-btn" style="background:var(--paper-deep);color:var(--ink);" onclick="startStudy('${note.id}', true)">全カード復習 <span class="count" style="background:rgba(0,0,0,0.08);color:var(--ink-soft);">${ts.total}</span></button>` : ''}
+    </div>
     ${sectionsHtml}
 
     <h3>追加メモ</h3>
@@ -1198,15 +2110,13 @@ function renderSection(s) {
 }
 
 function bindNoteHandlers(note) {
-  // Related tag click
   noteViewEl.querySelectorAll('.related-tag[data-id]').forEach(el => {
     el.addEventListener('click', () => openNote(el.dataset.id));
   });
 
-  // Notes load + autosave
   const ta = document.getElementById(`notes_${note.id}`);
   const meta = document.getElementById(`meta_${note.id}`);
-  const key = `pt_note__${note.id}`;
+  const key = NOTES_KEY_PREFIX + note.id;
   const stored = localStorage.getItem(key);
   if (stored) {
     try {
@@ -1240,18 +2150,585 @@ function formatDate(ts) {
 }
 
 /* ============================================================
+   Tab navigation
+   ============================================================ */
+const tabBtns = document.querySelectorAll('nav.tabs button');
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    switchTab(target);
+  });
+});
+
+function switchTab(target) {
+  tabBtns.forEach(b => b.classList.toggle('active', b.dataset.tab === target));
+  document.querySelectorAll('.page').forEach(p => p.classList.toggle('active', p.id === `page-${target}`));
+  // Auto-render content when switching
+  if (target === 'study') renderStudyLauncher();
+  if (target === 'stats') renderStats();
+  if (target === 'settings') renderSettings();
+  // close note view when switching off index
+  if (target !== 'index' && noteViewEl.classList.contains('active')) {
+    closeNote();
+  }
+  window.scrollTo(0, 0);
+}
+
+/* ============================================================
+   Study launcher
+   ============================================================ */
+function renderStudyLauncher() {
+  const overall = getOverallStats();
+  const launcher = document.getElementById('studyLauncher');
+  
+  let html = `
+    <div class="study-launch">
+      <button class="study-btn ${overall.dueNow === 0 ? 'disabled' : ''}" 
+              ${overall.dueNow === 0 ? 'disabled' : ''}
+              onclick="startStudy(null)">
+        全タグ復習 <span class="count">${overall.dueNow}</span>
+      </button>
+    </div>
+    <p style="font-family:var(--jp);font-size:13px;color:var(--ink-fade);margin-bottom:24px;line-height:1.7;">
+      日本語訳を見て、ポルトガル語を頭の中で組み立てましょう。
+      「答えを表示」を押した後、<b>正解との一致度</b>に応じて4段階で自己評価します。<br>
+      FSRS (Free Spaced Repetition Scheduler) が次回復習日を自動計算します。
+    </p>
+    <h3 style="font-family:var(--serif-display);font-size:14px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-fade);margin:24px 0 12px;border-bottom:1px solid var(--rule-soft);padding-bottom:6px;">タグ別復習</h3>
+  `;
+
+  NOTES.forEach(note => {
+    const ts = getTagStats(note.id);
+    html += `
+      <div class="study-tag-card">
+        <div class="stc-info">
+          <div class="stc-name">${note.name}</div>
+          <div class="stc-stats">
+            ${ts.total} cards
+            ${ts.dueNow > 0 ? ` · <span class="due">${ts.dueNow} 期日</span>` : ''}
+            ${ts.newCount > 0 && ts.newCount !== ts.total ? ` · <span class="new">${ts.newCount} 新規</span>` : ''}
+            ${ts.learned > 0 ? ` · <span class="learned">${ts.learned} 習得</span>` : ''}
+          </div>
+        </div>
+        <button class="stc-btn" ${ts.dueNow === 0 ? 'disabled' : ''} onclick="startStudy('${note.id}')">
+          ${ts.dueNow > 0 ? '復習' : '完了'}
+        </button>
+      </div>
+    `;
+  });
+
+  launcher.innerHTML = html;
+}
+
+/* ============================================================
+   Study session (FSRS)
+   ============================================================ */
+let session = null;
+
+function startStudy(tagId, includeAll = false) {
+  whenFsrsReady(() => _startStudy(tagId, includeAll));
+}
+
+function _startStudy(tagId, includeAll) {
+  const allCards = getAllCards();
+  const states = loadCardStates();
+  const now = new Date();
+
+  let pool = allCards;
+  if (tagId) pool = pool.filter(c => c.tagId === tagId);
+
+  // Filter to due cards (or all if includeAll)
+  let queue = pool.filter(c => {
+    const st = states[c.cardId];
+    if (!st) return true; // new
+    const due = st.due instanceof Date ? st.due : new Date(st.due);
+    return includeAll || due <= now;
+  });
+
+  if (queue.length === 0) {
+    showToast('復習対象のカードがありません');
+    return;
+  }
+
+  // Shuffle
+  queue = queue.sort(() => Math.random() - 0.5);
+
+  session = {
+    queue,
+    index: 0,
+    correct: 0,
+    again: 0,
+    hard: 0,
+    good: 0,
+    easy: 0,
+    states,
+    revealed: false,
+    startedAt: Date.now(),
+  };
+  
+  document.getElementById('studyOverlay').classList.add('active');
+  showCard();
+}
+
+function endStudy() {
+  document.getElementById('studyOverlay').classList.remove('active');
+  session = null;
+  refreshAll();
+}
+
+function showCard() {
+  if (!session) return;
+  if (session.index >= session.queue.length) {
+    showStudyDone();
+    return;
+  }
+  const card = session.queue[session.index];
+  const note = NOTES.find(n => n.id === card.tagId);
+  
+  document.getElementById('studyProgress').textContent = 
+    `${session.index + 1} / ${session.queue.length}`;
+  
+  const body = document.getElementById('studyBody');
+  body.innerHTML = `
+    <div class="study-prompt-label">日本語</div>
+    <div class="study-prompt">${card.jp}</div>
+    <button class="study-reveal-btn" id="revealBtn">答えを表示</button>
+  `;
+  document.getElementById('revealBtn').addEventListener('click', revealAnswer);
+  session.revealed = false;
+  window.scrollTo(0, 0);
+}
+
+function revealAnswer() {
+  if (!session) return;
+  const card = session.queue[session.index];
+  const states = session.states;
+  const cardState = states[card.cardId] || fsrsLib.createEmptyCard();
+  
+  // Get preview of all 4 ratings
+  const preview = scheduler.repeat(cardState, new Date());
+  
+  const intervalLabel = (state) => {
+    const due = state.due instanceof Date ? state.due : new Date(state.due);
+    return formatInterval(due - new Date());
+  };
+  
+  const body = document.getElementById('studyBody');
+  const baseUrl = window.location.href.split('#')[0];
+  const tagUrl = `${baseUrl}#${card.tagId}`;
+  body.innerHTML = `
+    <a class="study-tag-meta study-tag-link" href="${tagUrl}" target="_blank" rel="noopener">
+      #${card.tagId} <span class="ext-arrow">↗</span>
+    </a>
+    <div class="study-prompt-label">日本語</div>
+    <div class="study-prompt">${card.jp}</div>
+    <div class="study-answer">
+      <div class="study-answer-label">正解 — Português</div>
+      <div class="study-answer-pt">${card.pt}</div>
+      ${card.source ? `<div class="study-answer-source">— ${card.source}</div>` : ''}
+      <div class="rating-grid">
+        <button class="rating-btn again" data-rating="1">
+          <span class="label">Again</span>
+          <span class="interval">${intervalLabel(preview[fsrsLib.Rating.Again].card)}</span>
+        </button>
+        <button class="rating-btn hard" data-rating="2">
+          <span class="label">Hard</span>
+          <span class="interval">${intervalLabel(preview[fsrsLib.Rating.Hard].card)}</span>
+        </button>
+        <button class="rating-btn good" data-rating="3">
+          <span class="label">Good</span>
+          <span class="interval">${intervalLabel(preview[fsrsLib.Rating.Good].card)}</span>
+        </button>
+        <button class="rating-btn easy" data-rating="4">
+          <span class="label">Easy</span>
+          <span class="interval">${intervalLabel(preview[fsrsLib.Rating.Easy].card)}</span>
+        </button>
+      </div>
+      <div style="font-family:var(--jp);font-size:11px;color:var(--ink-fade);margin-top:14px;line-height:1.6;text-align:center;">
+        Again = 思い出せなかった / Hard = 苦労した / Good = 普通 / Easy = 簡単
+      </div>
+    </div>
+  `;
+  
+  document.querySelectorAll('.rating-btn').forEach(btn => {
+    btn.addEventListener('click', () => rateCard(parseInt(btn.dataset.rating)));
+  });
+  session.revealed = true;
+}
+
+function formatInterval(ms) {
+  if (ms <= 0) return '即';
+  const minutes = ms / (1000 * 60);
+  const hours = ms / (1000 * 60 * 60);
+  const days = ms / (1000 * 60 * 60 * 24);
+  if (minutes < 60) return `${Math.round(minutes)}分`;
+  if (hours < 24) return `${Math.round(hours)}時間`;
+  if (days < 30) return `${Math.round(days)}日`;
+  if (days < 365) return `${(days / 30).toFixed(1)}月`;
+  return `${(days / 365).toFixed(1)}年`;
+}
+
+function rateCard(rating) {
+  if (!session || !session.revealed) return;
+  const card = session.queue[session.index];
+  const cardState = session.states[card.cardId] || fsrsLib.createEmptyCard();
+  
+  const result = scheduler.next(cardState, new Date(), rating);
+  session.states[card.cardId] = result.card;
+  
+  // session counters
+  if (rating === 1) session.again++;
+  else if (rating === 2) session.hard++;
+  else if (rating === 3) session.good++;
+  else if (rating === 4) session.easy++;
+  if (rating >= 2) session.correct++;
+  
+  // Save after each card
+  saveCardStates(session.states);
+  recordReview();
+  
+  // If "Again", re-queue the card at end
+  if (rating === 1) {
+    session.queue.push(card);
+  }
+  
+  session.index++;
+  showCard();
+}
+
+function showStudyDone() {
+  const body = document.getElementById('studyBody');
+  const total = session.again + session.hard + session.good + session.easy;
+  const elapsed = Math.round((Date.now() - session.startedAt) / 1000);
+  body.innerHTML = `
+    <div class="study-done">
+      <div class="ornament">❦ · ❦ · ❦</div>
+      <h2>Sessão concluída!</h2>
+      <div class="stats">
+        <div>復習カード数<span>${total}</span></div>
+        <div>所要時間<span>${formatElapsed(elapsed)}</span></div>
+        <div>Again<span>${session.again}</span></div>
+        <div>Hard<span>${session.hard}</span></div>
+        <div>Good<span>${session.good}</span></div>
+        <div>Easy<span>${session.easy}</span></div>
+      </div>
+      <div class="next-actions">
+        <button class="study-btn" onclick="endStudy()">完了</button>
+      </div>
+    </div>
+  `;
+  document.getElementById('studyProgress').textContent = '✓';
+}
+
+function formatElapsed(sec) {
+  if (sec < 60) return `${sec}秒`;
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${m}分${s}秒`;
+}
+
+document.getElementById('studyClose').addEventListener('click', () => {
+  if (session && session.index < session.queue.length) {
+    if (!confirm('セッションを中断しますか？ここまでの進捗は保存されます。')) return;
+  }
+  endStudy();
+});
+
+/* ============================================================
+   Stats page
+   ============================================================ */
+function renderStats() {
+  whenFsrsReady(() => _renderStats());
+}
+
+function _renderStats() {
+  const overall = getOverallStats();
+  const el = document.getElementById('statsContent');
+  
+  // Upcoming chart
+  const maxUpcoming = Math.max(1, ...Object.values(overall.upcoming));
+  let upcomingHtml = '<div class="upcoming-chart"><div style="font-family:var(--serif-display);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-fade);margin-bottom:12px;font-style:italic;">向こう14日間の復習予定</div>';
+  for (let i = 0; i < 14; i++) {
+    const count = overall.upcoming[i];
+    const pct = (count / maxUpcoming) * 100;
+    const label = i === 0 ? '今日' : i === 1 ? '明日' : `${i}日後`;
+    upcomingHtml += `
+      <div class="upcoming-row">
+        <span class="day">${label}</span>
+        <div class="bar-wrap"><div class="bar" style="width:${pct}%;${count === 0 ? 'background:var(--rule);' : ''}"></div></div>
+        <span class="count">${count}</span>
+      </div>
+    `;
+  }
+  upcomingHtml += '</div>';
+
+  // Last 7 days reviews
+  const max7 = Math.max(1, ...overall.last7.map(d => d.count));
+  let last7Html = '<div class="upcoming-chart" style="margin-top:24px;"><div style="font-family:var(--serif-display);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-fade);margin-bottom:12px;font-style:italic;">過去7日間の復習実績</div>';
+  overall.last7.forEach((d, idx) => {
+    const pct = (d.count / max7) * 100;
+    const dt = new Date(d.date);
+    const lbl = idx === 6 ? '今日' : `${dt.getMonth()+1}/${dt.getDate()}`;
+    last7Html += `
+      <div class="upcoming-row">
+        <span class="day">${lbl}</span>
+        <div class="bar-wrap"><div class="bar" style="width:${pct}%;background:linear-gradient(to right, var(--gold), var(--terracotta));${d.count === 0 ? 'background:var(--rule);' : ''}"></div></div>
+        <span class="count">${d.count}</span>
+      </div>
+    `;
+  });
+  last7Html += '</div>';
+
+  el.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">期日のカード</div>
+        <div class="stat-value terracotta">${overall.dueNow}</div>
+        <div class="stat-sub">今すぐ復習可能</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">今日の復習</div>
+        <div class="stat-value gold">${overall.todayReviews}</div>
+        <div class="stat-sub">本日完了したカード数</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">習得済み</div>
+        <div class="stat-value green">${overall.learned}</div>
+        <div class="stat-sub">/ ${overall.total} 全カード</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">学習中</div>
+        <div class="stat-value azulejo">${overall.learning}</div>
+        <div class="stat-sub">${overall.newCount} 未着手</div>
+      </div>
+    </div>
+    ${upcomingHtml}
+    ${last7Html}
+  `;
+}
+
+/* ============================================================
+   Settings — Export / Import
+   ============================================================ */
+function renderSettings() {
+  const el = document.getElementById('settingsContent');
+  const overall = getOverallStats();
+  const states = loadCardStates();
+  const stateCount = Object.keys(states).length;
+  const stats = loadStats();
+  const totalReviews = Object.values(stats.reviewsByDate).reduce((a,b) => a+b, 0);
+  
+  // Count personal notes
+  let noteCount = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    if (localStorage.key(i)?.startsWith(NOTES_KEY_PREFIX)) noteCount++;
+  }
+  
+  el.innerHTML = `
+    <div class="settings-section">
+      <h3>データのバックアップ</h3>
+      <p>
+        全学習データ（FSRSカード状態・復習統計・タグごとのメモ）をJSONファイルとしてエクスポートできます。<br>
+        定期的にダウンロードして安全な場所（クラウドストレージなど）に保存することを推奨します。<br><br>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--ink-fade);">
+          • カード状態: ${stateCount} 件<br>
+          • 復習履歴: 累計 ${totalReviews} 回<br>
+          • 個別メモ: ${noteCount} タグ
+        </span>
+      </p>
+      <div class="settings-row">
+        <button class="action-btn" onclick="exportData()">JSONエクスポート</button>
+        <button class="action-btn" onclick="document.getElementById('importFileInput').click()">JSONインポート</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>カードプール</h3>
+      <p>
+        現在のカード総数: <b>${overall.total}</b> 枚<br>
+        各タグから例文＋バリエーションが自動的にカード化されます。HTMLファイルに新しいタグを追加すると、即座にカードプールが拡張されます。
+      </p>
+    </div>
+
+    <div class="settings-section">
+      <h3>FSRS について</h3>
+      <p>
+        このアプリは <b>FSRS (Free Spaced Repetition Scheduler)</b> アルゴリズム (ts-fsrs) を使用しています。<br>
+        Anki の最新標準アルゴリズムで、各カードを「忘却曲線」に基づいて最適なタイミングで復習させます。<br><br>
+        4段階評価:<br>
+        <span style="font-family:var(--mono);font-size:11px;line-height:1.8;">
+          • Again (1) — 思い出せなかった → すぐに再復習<br>
+          • Hard (2) — 苦労した → 短い間隔で再出題<br>
+          • Good (3) — 普通に思い出せた → 標準的な間隔<br>
+          • Easy (4) — 簡単だった → 長めの間隔
+        </span>
+      </p>
+    </div>
+
+    <div class="settings-section">
+      <h3 style="color:var(--terracotta);">危険な操作</h3>
+      <p>
+        以下の操作は <b>取り消せません</b>。実行前に必ずJSONエクスポートでバックアップを取ってください。
+      </p>
+      <div class="settings-row">
+        <button class="action-btn danger" onclick="resetCards()">FSRS進捗をリセット</button>
+        <button class="action-btn danger" onclick="resetAll()">全データを削除</button>
+      </div>
+    </div>
+  `;
+}
+
+function exportData() {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    cards: loadCardStates(),
+    stats: loadStats(),
+    notes: {},
+  };
+  // Personal notes
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith(NOTES_KEY_PREFIX)) {
+      data.notes[k.slice(NOTES_KEY_PREFIX.length)] = localStorage.getItem(k);
+    }
+  }
+  
+  // Serialize Date objects
+  const serialized = JSON.parse(JSON.stringify(data, (key, value) => {
+    if (value instanceof Date) return value.toISOString();
+    return value;
+  }));
+  
+  const json = JSON.stringify(serialized, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const ts = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  a.href = url;
+  a.download = `caderno-pt-backup-${ts}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('エクスポート完了');
+}
+
+document.getElementById('importFileInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data.version || typeof data !== 'object') {
+        throw new Error('不正なファイル形式');
+      }
+      if (!confirm(`このバックアップで現在のデータを置き換えますか？\n\nエクスポート日時: ${data.exportedAt || '不明'}\nカード状態: ${Object.keys(data.cards || {}).length} 件\n\n※現在のデータは上書きされます。`)) {
+        return;
+      }
+      
+      // Restore cards
+      if (data.cards) {
+        const restored = {};
+        Object.entries(data.cards).forEach(([k, v]) => {
+          restored[k] = { ...v };
+          if (v.due) restored[k].due = new Date(v.due);
+          if (v.last_review) restored[k].last_review = new Date(v.last_review);
+        });
+        saveCardStates(restored);
+      }
+      
+      // Restore stats
+      if (data.stats) {
+        saveStats(data.stats);
+      }
+      
+      // Restore notes
+      if (data.notes) {
+        // First remove existing notes
+        const toRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith(NOTES_KEY_PREFIX)) toRemove.push(k);
+        }
+        toRemove.forEach(k => localStorage.removeItem(k));
+        // Add restored notes
+        Object.entries(data.notes).forEach(([id, content]) => {
+          localStorage.setItem(NOTES_KEY_PREFIX + id, content);
+        });
+      }
+      
+      showToast('インポート完了');
+      refreshAll();
+    } catch (err) {
+      console.error(err);
+      showToast('インポート失敗: ' + err.message, true);
+    }
+    e.target.value = '';
+  };
+  reader.readAsText(file);
+});
+
+function resetCards() {
+  if (!confirm('FSRSのカード進捗をすべて削除しますか？\n（メモと個人設定は保持されます）')) return;
+  if (!confirm('本当によろしいですか？この操作は取り消せません。')) return;
+  localStorage.removeItem(CARDS_KEY);
+  localStorage.removeItem(STATS_KEY);
+  showToast('進捗をリセットしました');
+  refreshAll();
+}
+
+function resetAll() {
+  if (!confirm('全データ（カード進捗・メモ・統計）を削除しますか？')) return;
+  if (!confirm('本当によろしいですか？この操作は取り消せません。\nバックアップは取りましたか？')) return;
+  // Remove only our keys
+  const toRemove = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && (k.startsWith(STORAGE_PREFIX) || k.startsWith(NOTES_KEY_PREFIX))) toRemove.push(k);
+  }
+  toRemove.forEach(k => localStorage.removeItem(k));
+  showToast('全データを削除しました');
+  refreshAll();
+}
+
+/* ============================================================
+   Refresh helpers
+   ============================================================ */
+function refreshAll() {
+  renderTagList(searchInput.value);
+  updateDueBadge();
+  // Re-render currently active page
+  const active = document.querySelector('.page.active');
+  if (active && active.id === 'page-study') renderStudyLauncher();
+  if (active && active.id === 'page-stats') _renderStats();
+  if (active && active.id === 'page-settings') renderSettings();
+}
+
+function updateDueBadge() {
+  const overall = getOverallStats();
+  const badge = document.getElementById('dueBadge');
+  if (overall.dueNow > 0) {
+    badge.textContent = overall.dueNow;
+    badge.style.display = '';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+/* ============================================================
    INIT
    ============================================================ */
 searchInput.addEventListener('input', e => renderTagList(e.target.value));
 renderTagList();
+updateDueBadge();
 
-// Deep-link on load
 const initialHash = window.location.hash.slice(1);
 if (initialHash && NOTES.find(n => n.id === initialHash)) {
   openNote(initialHash);
 }
 
-// Browser back support
 window.addEventListener('popstate', () => {
   const h = window.location.hash.slice(1);
   if (h && NOTES.find(n => n.id === h)) {
@@ -1260,6 +2737,14 @@ window.addEventListener('popstate', () => {
     closeNote();
   }
 });
+
+// Expose for inline onclick
+window.startStudy = startStudy;
+window.endStudy = endStudy;
+window.exportData = exportData;
+window.resetCards = resetCards;
+window.resetAll = resetAll;
+window.closeNote = closeNote;
 </script>
 
 </body>
