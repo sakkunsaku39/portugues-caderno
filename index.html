@@ -885,18 +885,63 @@
     margin-bottom: 14px;
     font-style: italic;
   }
+  .study-answer-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
   .study-answer-pt {
     font-family: var(--serif-body);
     font-style: italic;
     font-size: 26px;
     line-height: 1.4;
     color: var(--ink);
-    margin-bottom: 16px;
     font-weight: 500;
+    flex: 1;
+    min-width: 0;
   }
   .study-answer-pt strong {
     background: linear-gradient(to bottom, transparent 60%, var(--highlight) 60%);
     font-weight: 600;
+  }
+  .copy-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 12px;
+    background: var(--paper-deep);
+    border: 1px solid var(--rule);
+    color: var(--ink-soft);
+    cursor: pointer;
+    font-family: var(--serif-display);
+    font-style: italic;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    border-radius: 2px;
+    transition: all 0.18s;
+    margin-top: 6px;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .copy-btn:hover,
+  .copy-btn:focus {
+    background: var(--azulejo);
+    color: var(--paper);
+    border-color: var(--azulejo);
+  }
+  .copy-btn:active { transform: scale(0.96); }
+  .copy-btn.copied {
+    background: var(--good-bg);
+    border-color: var(--good-border);
+    color: var(--good-border);
+    pointer-events: none;
+  }
+  .copy-btn .copy-icon {
+    font-size: 14px;
+    font-style: normal;
+    line-height: 1;
   }
   .study-answer-source {
     font-family: var(--serif-display);
@@ -1138,6 +1183,10 @@
     nav.tabs button { font-size: 10px; padding: 12px 2px; letter-spacing: 0.1em; }
     .study-prompt { font-size: 19px; }
     .study-answer-pt { font-size: 22px; }
+    .study-answer-row { gap: 8px; }
+    .copy-btn { padding: 7px 10px; font-size: 10px; }
+    .copy-btn .copy-icon { font-size: 13px; }
+    .copy-btn .copy-label { display: none; }
     .rating-btn { font-size: 11px; padding: 12px 2px; }
     .rating-btn .interval { font-size: 9px; }
     .stats-grid { gap: 8px; }
@@ -2324,7 +2373,13 @@ function revealAnswer() {
     <div class="study-prompt">${card.jp}</div>
     <div class="study-answer">
       <div class="study-answer-label">正解 — Português</div>
-      <div class="study-answer-pt">${card.pt}</div>
+      <div class="study-answer-row">
+        <div class="study-answer-pt">${card.pt}</div>
+        <button class="copy-btn" id="copyPtBtn" title="ポルトガル語をコピー">
+          <span class="copy-icon">⧉</span>
+          <span class="copy-label">コピー</span>
+        </button>
+      </div>
       ${card.source ? `<div class="study-answer-source">— ${card.source}</div>` : ''}
       <div class="rating-grid">
         <button class="rating-btn again" data-rating="1">
@@ -2353,6 +2408,49 @@ function revealAnswer() {
   document.querySelectorAll('.rating-btn').forEach(btn => {
     btn.addEventListener('click', () => rateCard(parseInt(btn.dataset.rating)));
   });
+  
+  // Copy button
+  const copyBtn = document.getElementById('copyPtBtn');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const plainText = stripHtml(card.pt);
+      try {
+        await navigator.clipboard.writeText(plainText);
+        copyBtn.classList.add('copied');
+        copyBtn.querySelector('.copy-icon').textContent = '✓';
+        copyBtn.querySelector('.copy-label').textContent = 'コピー済';
+        setTimeout(() => {
+          copyBtn.classList.remove('copied');
+          copyBtn.querySelector('.copy-icon').textContent = '⧉';
+          copyBtn.querySelector('.copy-label').textContent = 'コピー';
+        }, 1600);
+      } catch (err) {
+        // Fallback for older browsers / restricted contexts
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = plainText;
+          ta.style.position = 'fixed';
+          ta.style.left = '-9999px';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          copyBtn.classList.add('copied');
+          copyBtn.querySelector('.copy-icon').textContent = '✓';
+          copyBtn.querySelector('.copy-label').textContent = 'コピー済';
+          setTimeout(() => {
+            copyBtn.classList.remove('copied');
+            copyBtn.querySelector('.copy-icon').textContent = '⧉';
+            copyBtn.querySelector('.copy-label').textContent = 'コピー';
+          }, 1600);
+        } catch (err2) {
+          showToast('コピーに失敗しました', true);
+        }
+      }
+    });
+  }
+  
   session.revealed = true;
 }
 
