@@ -750,6 +750,73 @@
     cursor: default;
   }
 
+  /* Learned tag toggle */
+  .learned-toggle {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border: 1.5px solid var(--rule);
+    background: transparent;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all 0.18s;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  .learned-toggle .learned-check {
+    font-size: 14px;
+    color: transparent;
+    line-height: 1;
+    transition: color 0.18s;
+    font-weight: 700;
+  }
+  .learned-toggle:hover {
+    border-color: var(--good-border);
+  }
+  .learned-toggle.on {
+    background: var(--good-border);
+    border-color: var(--good-border);
+  }
+  .learned-toggle.on .learned-check {
+    color: var(--paper);
+  }
+  .learned-toggle:active { transform: scale(0.92); }
+
+  .study-tag-card.is-learned .stc-name {
+    color: var(--ink-fade);
+  }
+  .learned-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    background: var(--good-bg);
+    color: var(--good-border);
+    padding: 2px 6px;
+    border-radius: 8px;
+    margin-left: 8px;
+    letter-spacing: 0.04em;
+    vertical-align: 2px;
+    font-style: normal;
+    font-weight: 500;
+  }
+
+  /* Variant for "learned-only" study button */
+  .study-btn.study-btn-learned {
+    background: var(--good-border);
+  }
+  .study-btn.study-btn-learned:hover {
+    background: #4a6a2e;
+  }
+  .study-btn.study-btn-learned.disabled,
+  .study-btn.study-btn-learned:disabled {
+    background: var(--rule);
+    color: var(--ink-fade);
+  }
+
   /* Study overlay */
   .study-overlay {
     position: fixed;
@@ -1031,6 +1098,84 @@
   }
 
   /* Stats */
+  .stats-filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    background: var(--paper-deep);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    flex-wrap: wrap;
+  }
+  .filter-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .filter-toggle input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .filter-track {
+    position: relative;
+    display: inline-block;
+    width: 38px;
+    height: 22px;
+    background: var(--rule);
+    border-radius: 999px;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .filter-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: var(--paper);
+    border-radius: 50%;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+  }
+  .filter-toggle input:checked + .filter-track {
+    background: var(--good-border);
+  }
+  .filter-toggle input:checked + .filter-track .filter-thumb {
+    transform: translateX(16px);
+    background: var(--paper);
+  }
+  .filter-toggle:active .filter-thumb {
+    width: 22px;
+  }
+  .filter-label {
+    font-family: var(--jp);
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.3;
+  }
+  .filter-scope {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-fade);
+    letter-spacing: 0.04em;
+  }
+  .filter-scope b {
+    color: var(--good-border);
+    font-weight: 600;
+  }
+  .filter-scope .filter-empty {
+    color: var(--terracotta);
+    font-family: var(--jp);
+    letter-spacing: 0;
+  }
+
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -1821,6 +1966,7 @@ const STORAGE_PREFIX = 'pt_caderno__';
 const CARDS_KEY = STORAGE_PREFIX + 'cards';     // { [cardId]: cardState }
 const NOTES_KEY_PREFIX = 'pt_note__';           // existing personal notes
 const STATS_KEY = STORAGE_PREFIX + 'stats';     // { reviewsByDate: { 'yyyy-mm-dd': n } }
+const LEARNED_KEY = STORAGE_PREFIX + 'learned'; // { [tagId]: true } — user-marked "learned"
 
 // Build the canonical list of (cardId, tagId, pt, jp, source) from NOTES.
 // IDs are stable: based on stripped pt content + tag id, so order changes don't matter.
@@ -1929,6 +2075,38 @@ function recordReview() {
 }
 
 /* ============================================================
+   Learned tags (user-toggled flag per tag)
+   ============================================================ */
+function loadLearned() {
+  try {
+    const raw = localStorage.getItem(LEARNED_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveLearned(obj) {
+  localStorage.setItem(LEARNED_KEY, JSON.stringify(obj));
+}
+
+function isLearned(tagId) {
+  return !!loadLearned()[tagId];
+}
+
+function setLearned(tagId, value) {
+  const obj = loadLearned();
+  if (value) obj[tagId] = true;
+  else delete obj[tagId];
+  saveLearned(obj);
+}
+
+function toggleLearned(tagId) {
+  setLearned(tagId, !isLearned(tagId));
+  refreshAll();
+}
+
+/* ============================================================
    Per-tag card statistics
    ============================================================ */
 function getTagStats(tagId) {
@@ -1953,8 +2131,9 @@ function getTagStats(tagId) {
   return { total: cards.length, dueNow, newCount, learning, learned };
 }
 
-function getOverallStats() {
-  const allCards = getAllCards();
+function getOverallStats(filter = null) {
+  const allCardsRaw = getAllCards();
+  const allCards = filter ? allCardsRaw.filter(filter) : allCardsRaw;
   const states = loadCardStates();
   const now = new Date();
   let dueNow = 0, newCount = 0, learning = 0, learned = 0;
@@ -1981,7 +2160,8 @@ function getOverallStats() {
     }
   });
   
-  // today's reviews
+  // today's reviews — note: review counts are date-based only (no per-card history),
+  // so they can't be filtered by tag. Always returns global totals.
   const stats = loadStats();
   const todayReviews = stats.reviewsByDate[todayKey()] || 0;
   // last 7 days
@@ -2230,6 +2410,25 @@ function renderStudyLauncher() {
   const overall = getOverallStats();
   const launcher = document.getElementById('studyLauncher');
   
+  // Compute due count limited to learned tags
+  const learned = loadLearned();
+  const learnedTagIds = Object.keys(learned).filter(k => learned[k]);
+  const allCards = getAllCards();
+  const states = loadCardStates();
+  const now = new Date();
+  let learnedDueCount = 0;
+  let learnedTotalCount = 0;
+  if (learnedTagIds.length > 0) {
+    allCards.forEach(c => {
+      if (!learned[c.tagId]) return;
+      learnedTotalCount++;
+      const st = states[c.cardId];
+      if (!st) { learnedDueCount++; return; }
+      const due = st.due instanceof Date ? st.due : new Date(st.due);
+      if (due <= now) learnedDueCount++;
+    });
+  }
+  
   let html = `
     <div class="study-launch">
       <button class="study-btn ${overall.dueNow === 0 ? 'disabled' : ''}" 
@@ -2237,21 +2436,39 @@ function renderStudyLauncher() {
               onclick="startStudy(null)">
         全タグ復習 <span class="count">${overall.dueNow}</span>
       </button>
+      <button class="study-btn study-btn-learned ${learnedTagIds.length === 0 || learnedDueCount === 0 ? 'disabled' : ''}"
+              ${learnedTagIds.length === 0 || learnedDueCount === 0 ? 'disabled' : ''}
+              onclick="startStudy('__learned__')"
+              title="${learnedTagIds.length === 0 ? '学習済みタグがありません' : ''}">
+        学習済み復習 <span class="count">${learnedDueCount}</span>
+      </button>
     </div>
     <p style="font-family:var(--jp);font-size:13px;color:var(--ink-fade);margin-bottom:24px;line-height:1.7;">
       日本語訳を見て、ポルトガル語を頭の中で組み立てましょう。
       「答えを表示」を押した後、<b>正解との一致度</b>に応じて4段階で自己評価します。<br>
       FSRS (Free Spaced Repetition Scheduler) が次回復習日を自動計算します。
     </p>
-    <h3 style="font-family:var(--serif-display);font-size:14px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-fade);margin:24px 0 12px;border-bottom:1px solid var(--rule-soft);padding-bottom:6px;">タグ別復習</h3>
+    <h3 style="font-family:var(--serif-display);font-size:14px;letter-spacing:0.18em;text-transform:uppercase;color:var(--ink-fade);margin:24px 0 12px;border-bottom:1px solid var(--rule-soft);padding-bottom:6px;">
+      タグ別復習
+      <span style="font-family:var(--jp);font-size:11px;color:var(--ink-fade);letter-spacing:0;text-transform:none;font-style:italic;font-weight:400;margin-left:8px;">
+        ✓ をタップで「学習済み」に切替
+      </span>
+    </h3>
   `;
 
   NOTES.forEach(note => {
     const ts = getTagStats(note.id);
+    const isL = !!learned[note.id];
     html += `
-      <div class="study-tag-card">
+      <div class="study-tag-card ${isL ? 'is-learned' : ''}">
+        <button class="learned-toggle ${isL ? 'on' : ''}" 
+                onclick="toggleLearned('${note.id}')"
+                title="${isL ? '学習済み（タップで解除）' : '学習済みにマーク'}"
+                aria-label="${isL ? '学習済みを解除' : '学習済みにする'}">
+          <span class="learned-check">✓</span>
+        </button>
         <div class="stc-info">
-          <div class="stc-name">${note.name}</div>
+          <div class="stc-name">${note.name}${isL ? '<span class="learned-badge">学習済</span>' : ''}</div>
           <div class="stc-stats">
             ${ts.total} cards
             ${ts.dueNow > 0 ? ` · <span class="due">${ts.dueNow} 期日</span>` : ''}
@@ -2274,17 +2491,23 @@ function renderStudyLauncher() {
    ============================================================ */
 let session = null;
 
-function startStudy(tagId, includeAll = false) {
-  whenFsrsReady(() => _startStudy(tagId, includeAll));
+// scope: tagId | null (=all) | '__learned__' (=learned tags only)
+function startStudy(scope, includeAll = false) {
+  whenFsrsReady(() => _startStudy(scope, includeAll));
 }
 
-function _startStudy(tagId, includeAll) {
+function _startStudy(scope, includeAll) {
   const allCards = getAllCards();
   const states = loadCardStates();
   const now = new Date();
 
   let pool = allCards;
-  if (tagId) pool = pool.filter(c => c.tagId === tagId);
+  if (scope === '__learned__') {
+    const learned = loadLearned();
+    pool = pool.filter(c => learned[c.tagId]);
+  } else if (scope) {
+    pool = pool.filter(c => c.tagId === scope);
+  }
 
   // Filter to due cards (or all if includeAll)
   let queue = pool.filter(c => {
@@ -2535,13 +2758,56 @@ document.getElementById('studyClose').addEventListener('click', () => {
 /* ============================================================
    Stats page
    ============================================================ */
+const STATS_FILTER_KEY = STORAGE_PREFIX + 'stats_filter_learned_only'; // 'true' | 'false'
+
+function getStatsFilterLearnedOnly() {
+  const v = localStorage.getItem(STATS_FILTER_KEY);
+  // Default: ON (true) when key not set
+  return v === null ? true : v === 'true';
+}
+
+function setStatsFilterLearnedOnly(value) {
+  localStorage.setItem(STATS_FILTER_KEY, value ? 'true' : 'false');
+}
+
+function toggleStatsFilter() {
+  setStatsFilterLearnedOnly(!getStatsFilterLearnedOnly());
+  _renderStats();
+}
+
 function renderStats() {
   whenFsrsReady(() => _renderStats());
 }
 
 function _renderStats() {
-  const overall = getOverallStats();
+  const learned = loadLearned();
+  const learnedTagIds = Object.keys(learned).filter(k => learned[k]);
+  const filterOn = getStatsFilterLearnedOnly();
+  
+  // Build the filter function only if toggle is ON AND there are learned tags
+  // (if toggle is ON but no learned tags exist, applying the filter would yield 0 cards
+  //  which is unhelpful — we still show the empty state and let the user know.)
+  const filter = filterOn ? (c => learned[c.tagId]) : null;
+  const overall = getOverallStats(filter);
   const el = document.getElementById('statsContent');
+  
+  // Filter scope notice
+  const scopeNoticeHtml = `
+    <div class="stats-filter-bar">
+      <label class="filter-toggle">
+        <input type="checkbox" id="filterLearnedOnly" ${filterOn ? 'checked' : ''}>
+        <span class="filter-track"><span class="filter-thumb"></span></span>
+        <span class="filter-label">学習済みタグのみ表示</span>
+      </label>
+      <div class="filter-scope">
+        ${filterOn 
+          ? (learnedTagIds.length > 0 
+              ? `スコープ: 学習済み <b>${learnedTagIds.length}</b> タグ`
+              : `<span class="filter-empty">学習済みタグが0個 — Estudar タブで✓を付けてください</span>`)
+          : `スコープ: <b>全タグ</b>`}
+      </div>
+    </div>
+  `;
   
   // Upcoming chart
   const maxUpcoming = Math.max(1, ...Object.values(overall.upcoming));
@@ -2560,9 +2826,11 @@ function _renderStats() {
   }
   upcomingHtml += '</div>';
 
-  // Last 7 days reviews
+  // Last 7 days reviews — note: stored only as date totals, can't be tag-filtered
   const max7 = Math.max(1, ...overall.last7.map(d => d.count));
-  let last7Html = '<div class="upcoming-chart" style="margin-top:24px;"><div style="font-family:var(--serif-display);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-fade);margin-bottom:12px;font-style:italic;">過去7日間の復習実績</div>';
+  let last7Html = `<div class="upcoming-chart" style="margin-top:24px;">
+    <div style="font-family:var(--serif-display);font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink-fade);margin-bottom:4px;font-style:italic;">過去7日間の復習実績</div>
+    <div style="font-family:var(--jp);font-size:10px;color:var(--ink-fade);margin-bottom:12px;font-style:italic;">※ この実績は全タグの累計（フィルタ対象外）</div>`;
   overall.last7.forEach((d, idx) => {
     const pct = (d.count / max7) * 100;
     const dt = new Date(d.date);
@@ -2578,6 +2846,7 @@ function _renderStats() {
   last7Html += '</div>';
 
   el.innerHTML = `
+    ${scopeNoticeHtml}
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-label">期日のカード</div>
@@ -2587,12 +2856,12 @@ function _renderStats() {
       <div class="stat-card">
         <div class="stat-label">今日の復習</div>
         <div class="stat-value gold">${overall.todayReviews}</div>
-        <div class="stat-sub">本日完了したカード数</div>
+        <div class="stat-sub">本日完了したカード数 (全体)</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">習得済み</div>
         <div class="stat-value green">${overall.learned}</div>
-        <div class="stat-sub">/ ${overall.total} 全カード</div>
+        <div class="stat-sub">/ ${overall.total} カード</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">学習中</div>
@@ -2603,6 +2872,12 @@ function _renderStats() {
     ${upcomingHtml}
     ${last7Html}
   `;
+  
+  // Bind toggle
+  const cb = document.getElementById('filterLearnedOnly');
+  if (cb) {
+    cb.addEventListener('change', toggleStatsFilter);
+  }
 }
 
 /* ============================================================
@@ -2621,16 +2896,20 @@ function renderSettings() {
   for (let i = 0; i < localStorage.length; i++) {
     if (localStorage.key(i)?.startsWith(NOTES_KEY_PREFIX)) noteCount++;
   }
+  // Count learned tags
+  const learnedObj = loadLearned();
+  const learnedCount = Object.keys(learnedObj).filter(k => learnedObj[k]).length;
   
   el.innerHTML = `
     <div class="settings-section">
       <h3>データのバックアップ</h3>
       <p>
-        全学習データ（FSRSカード状態・復習統計・タグごとのメモ）をJSONファイルとしてエクスポートできます。<br>
+        全学習データ（FSRSカード状態・復習統計・学習済みタグ・個別メモ）をJSONファイルとしてエクスポートできます。<br>
         定期的にダウンロードして安全な場所（クラウドストレージなど）に保存することを推奨します。<br><br>
         <span style="font-family:var(--mono);font-size:11px;color:var(--ink-fade);">
           • カード状態: ${stateCount} 件<br>
           • 復習履歴: 累計 ${totalReviews} 回<br>
+          • 学習済みタグ: ${learnedCount} 個<br>
           • 個別メモ: ${noteCount} タグ
         </span>
       </p>
@@ -2678,10 +2957,11 @@ function renderSettings() {
 
 function exportData() {
   const data = {
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     cards: loadCardStates(),
     stats: loadStats(),
+    learned: loadLearned(),
     notes: {},
   };
   // Personal notes
@@ -2722,7 +3002,8 @@ document.getElementById('importFileInput').addEventListener('change', (e) => {
       if (!data.version || typeof data !== 'object') {
         throw new Error('不正なファイル形式');
       }
-      if (!confirm(`このバックアップで現在のデータを置き換えますか？\n\nエクスポート日時: ${data.exportedAt || '不明'}\nカード状態: ${Object.keys(data.cards || {}).length} 件\n\n※現在のデータは上書きされます。`)) {
+      const learnedCount = data.learned ? Object.keys(data.learned).filter(k => data.learned[k]).length : 0;
+      if (!confirm(`このバックアップで現在のデータを置き換えますか？\n\nエクスポート日時: ${data.exportedAt || '不明'}\nバージョン: ${data.version}\nカード状態: ${Object.keys(data.cards || {}).length} 件\n学習済みタグ: ${learnedCount} 個\n\n※現在のデータは上書きされます。`)) {
         return;
       }
       
@@ -2740,6 +3021,13 @@ document.getElementById('importFileInput').addEventListener('change', (e) => {
       // Restore stats
       if (data.stats) {
         saveStats(data.stats);
+      }
+      
+      // Restore learned tags (v2+; for v1 backups, we clear existing learned to avoid stale state)
+      if (data.learned !== undefined) {
+        saveLearned(data.learned || {});
+      } else {
+        // v1 backup — keep existing learned flags as-is (don't wipe user's current selection)
       }
       
       // Restore notes
@@ -2843,6 +3131,7 @@ window.exportData = exportData;
 window.resetCards = resetCards;
 window.resetAll = resetAll;
 window.closeNote = closeNote;
+window.toggleLearned = toggleLearned;
 </script>
 
 </body>
